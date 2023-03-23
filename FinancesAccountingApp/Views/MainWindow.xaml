@@ -41,6 +41,7 @@
             </Grid.ColumnDefinitions>
 
             <ComboBox MaxHeight="30" Margin="5" FontSize="12"
+                      SelectedItem="{Binding SelectedWallet}"
                       ItemsSource="{Binding Wallets}"/>
             <Button Grid.Column="1" MaxHeight="30" MaxWidth="100" Margin="5" Content="Отчет/График" FontSize="12"
                     Command="{Binding AccountCommand}"/>

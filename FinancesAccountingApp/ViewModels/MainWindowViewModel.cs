@@ -21,13 +21,28 @@ namespace FinancesAccountingApp.ViewModels
             var dbContext = new AppDbContext();
 
             var wallet = dbContext.Wallets;
-            Wallets = new ObservableCollection<Wallet>();
+            Wallets = new ObservableCollection<Wallet>(wallet);
 
-            var expenses = dbContext.Expenses;
+            SelectedWallet = Wallets.FirstOrDefault();
+            
+            var expenses = dbContext.Expenses.Where(x => x.WalletId == SelectedWallet.Id);
             Expenses = new ObservableCollection<Expense>(expenses);
+            RaisePropertyChanged(nameof(Expenses));
 
-            var incomes = dbContext.Incomes;
+            var incomes = dbContext.Incomes.Where(x => x.WalletId == SelectedWallet.Id);
             Incomes = new ObservableCollection<Income>(incomes);
+            RaisePropertyChanged(nameof(Incomes));
+        }
+
+        private Wallet _selectedWallet;
+        public Wallet SelectedWallet 
+        {
+            get => _selectedWallet;
+            set
+            {
+                _selectedWallet = value;
+                RaisePropertyChanged();
+            }
         }
 
         private Wallet _wallet;
