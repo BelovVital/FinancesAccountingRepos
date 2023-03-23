@@ -15,14 +15,13 @@ using System.Windows.Shapes;
 namespace FinancesAccountingApp.Views
 {
     /// <summary>
-    /// Логика взаимодействия для AddExpenseWindow.xaml
+    /// Логика взаимодействия для AccountWindow.xaml
     /// </summary>
-    public partial class AddExpenseWindow : Window
+    public partial class AccountWindow : Window
     {
-        public AddExpenseWindow()
+        public AccountWindow()
         {
             InitializeComponent();
-            DataContext = new AddExpenseViewModel(this);
         }
     }
 }
