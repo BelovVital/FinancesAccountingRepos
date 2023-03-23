@@ -13,7 +13,7 @@
             <RowDefinition Height="1*"/>
             <RowDefinition Height="7*"/>
         </Grid.RowDefinitions>
-        
+
         <Grid>
             <Menu Background="White" MaxHeight="20" FontSize="12">
                 <MenuItem Header="Кошелек">
@@ -31,7 +31,7 @@
                 </MenuItem>
             </Menu>
         </Grid>
-        
+
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1.5*"/>
@@ -39,42 +39,31 @@
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
-            
-            <ComboBox MaxHeight="30" Margin="5" FontSize="12"/>
-            <Button Grid.Column="1" MaxHeight="30" MaxWidth="100" Margin="5" Content="Отчет/График" FontSize="12"/>
-            <DatePicker Grid.Column="2" MaxHeight="30" MaxWidth="150" Margin="5" FontSize="12"/>
-            <DatePicker Grid.Column="3" MaxHeight="30" MaxWidth="150" Margin="5" FontSize="12"/>
+
+            <ComboBox MaxHeight="30" Margin="5" FontSize="12"
+                      ItemsSource="{Binding Wallets}"/>
+            <Button Grid.Column="1" MaxHeight="30" MaxWidth="100" Margin="5" Content="Отчет/График" FontSize="12"
+                    Command="{Binding AccountCommand}"/>
+            <DatePicker Grid.Column="2" MaxHeight="30" MaxWidth="150" Margin="5" FontSize="12"
+                        SelectedDate ="{Binding StartDate}"/>
+            <DatePicker Grid.Column="3" MaxHeight="30" MaxWidth="150" Margin="5" FontSize="12"
+                        SelectedDate ="{Binding EndDate}"/>
         </Grid>
         <Grid Grid.Row="2">
-            <TabControl Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="341*"/>
+                <ColumnDefinition Width="459*"/>
+            </Grid.ColumnDefinitions>
+            <TabControl Margin="5,5,5,5" Grid.ColumnSpan="2">
                 <TabItem Header="Расходы" FontSize="14" MinWidth="100" MinHeight="25">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="6*"/>
                             <RowDefinition Height="1*"/>
                         </Grid.RowDefinitions>
-                        <DataGrid>
-                            
-                        </DataGrid>
-                        <Grid Grid.Row="1">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="4*"/>
-                                <ColumnDefinition Width="1*"/>
-                                <ColumnDefinition Width="1*"/>
-                            </Grid.ColumnDefinitions>
-                            <Button Grid.Column="1" MaxHeight="30" MaxWidth="100" Content="Добавить"/>
-                            <Button Grid.Column="2" MaxHeight="30" MaxWidth="100" Content="Удалить"/>
-                        </Grid>
-                    </Grid>
-                    
-                </TabItem>
-                <TabItem Header="Доходы" FontSize="14" MinWidth="100" MinHeight="25">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="6*"/>
-                            <RowDefinition Height="1*"/>
-                        </Grid.RowDefinitions>
-                        <DataGrid>
+                        <DataGrid  IsReadOnly="True" SelectionMode="Extended"
+                                   SelectedItem="{Binding SelectedExpense, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                   ItemsSource="{Binding Expenses}">
 
                         </DataGrid>
                         <Grid Grid.Row="1">
@@ -83,8 +72,31 @@
                                 <ColumnDefinition Width="1*"/>
                                 <ColumnDefinition Width="1*"/>
                             </Grid.ColumnDefinitions>
-                            <Button Grid.Column="1" MaxHeight="30" MaxWidth="100" Content="Добавить"/>
-                            <Button Grid.Column="2" MaxHeight="30" MaxWidth="100" Content="Удалить"/>
+                            <Button Grid.Column="1" MaxHeight="30" MaxWidth="100" Content="Добавить" Command="{Binding AddExpenseCommand}"/>
+                            <Button Grid.Column="2" MaxHeight="30" MaxWidth="100" Content="Удалить" Command="{Binding DeleteExpenseCommand}"/>
+                        </Grid>
+                    </Grid>
+
+                </TabItem>
+                <TabItem Header="Доходы" FontSize="14" MinWidth="100" MinHeight="25">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="6*"/>
+                            <RowDefinition Height="1*"/>
+                        </Grid.RowDefinitions>
+                        <DataGrid IsReadOnly="True" SelectionMode="Extended"
+                                    SelectedItem="{Binding SelectedIncome, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    ItemsSource="{Binding Incomes}">
+
+                        </DataGrid>
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="4*"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="1" MaxHeight="30" MaxWidth="100" Content="Добавить" Command="{Binding AddIncomeCommand}"/>
+                            <Button Grid.Column="2" MaxHeight="30" MaxWidth="100" Content="Удалить" Command="{Binding DeleteIncomeCommand}"/>
                         </Grid>
                     </Grid>
                 </TabItem>
