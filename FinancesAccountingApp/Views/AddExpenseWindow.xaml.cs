@@ -15,11 +15,11 @@ using System.Windows.Shapes;
 namespace FinancesAccountingApp.Views
 {
     /// <summary>
-    /// Логика взаимодействия для AddIncomeExpenseWindow.xaml
+    /// Логика взаимодействия для AddExpenseWindow.xaml
     /// </summary>
-    public partial class AddIncomeExpenseWindow : Window
+    public partial class AddExpenseWindow : Window
     {
-        public AddIncomeExpenseWindow()
+        public AddExpenseWindow()
         {
             InitializeComponent();
         }
