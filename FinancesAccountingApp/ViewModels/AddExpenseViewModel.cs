@@ -1,4 +1,5 @@
 ﻿using FinancesAccounting.Models.DataBase;
+using FinancesAccountingApp.Models.DataBase;
 using FinancesAccountingApp.Models.DataBase.Entities;
 using FinancesAccountingApp.Views;
 using Prism.Commands;
@@ -9,17 +10,18 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
-namespace FinancesAccountingApp.ViewModels
+namespace FinancesAccounting.ViewModels
 {
-    internal class AddIncomeViewModel : BindableBase
+    internal class AddExpenseViewModel : BindableBase
     {
-        AddIncomeWindow _addIncomeWindow;
-        private readonly Income _income;
-        public AddIncomeViewModel(AddIncomeWindow addIncomeWindow)
+        AddExpenseWindow _addExpenseWindow;
+        private readonly Expense _expense;
+        public AddExpenseViewModel(AddExpenseWindow addExpenseWindow) 
         {
-            _addIncomeWindow = addIncomeWindow;
-
+            _addExpenseWindow = addExpenseWindow;
+            
             var dbcontext = new AppDbContext();
 
             var currency = dbcontext.Currencies;
@@ -30,6 +32,7 @@ namespace FinancesAccountingApp.ViewModels
 
             var expenseSource = dbcontext.ExpenseSources;
             Source = new ObservableCollection<ExpenseSource>(expenseSource);
+
         }
 
 
@@ -49,15 +52,13 @@ namespace FinancesAccountingApp.ViewModels
         private Currency _currency;
         public Currency Currency
         {
-            get => _currency;
-            set
-            {
-                _currency = value;
+            get => _currency; 
+            set 
+            { 
+                _currency = value; 
                 RaisePropertyChanged();
             }
         }
-
-
         private Currency _selectedcurrency;
         private Currency SelectedCurrency
         {
@@ -87,7 +88,7 @@ namespace FinancesAccountingApp.ViewModels
         private ExpenseSource _expenseSource;
         public ExpenseSource ExpenseSource
         {
-            get => _expenseSource;
+            get=> _expenseSource;
             set
             {
                 _expenseSource = value;
@@ -118,13 +119,13 @@ namespace FinancesAccountingApp.ViewModels
 
         private void SaveCommand_Execute()
         {
-            _income.Summa = Summa;
-            _income.Currency = Currency.Name;
-            _income.Category = ExpenseCategory.Name;
-            _income.Source = ExpenseSource.Name;
-            _income.Date = Dates.Value;
-            _addIncomeWindow.DialogResult = true;
-            _addIncomeWindow.Close();
+            _expense.Summa = Summa;
+            _expense.Currency = Currency.Name;
+            _expense.Category = ExpenseCategory.Name;
+            _expense.Source = ExpenseSource.Name;
+            _expense.Date = Dates.Value;
+            _addExpenseWindow.DialogResult = true;
+            _addExpenseWindow.Close();
         }
 
         public bool SaveCommand_CanExecute()
@@ -134,8 +135,8 @@ namespace FinancesAccountingApp.ViewModels
 
         private void CancelCommand_Execute()
         {
-            _addIncomeWindow.DialogResult = false;
-            _addIncomeWindow.Close();
+            _addExpenseWindow.DialogResult = false;
+            _addExpenseWindow.Close();
         }
     }
 }
