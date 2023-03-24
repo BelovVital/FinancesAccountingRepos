@@ -82,6 +82,16 @@ namespace FinancesAccounting.ViewModels
                 RaisePropertyChanged();
             }
         }
+        private ExpenseSource _selectedExpenseCategories;
+        private ExpenseSource SelectedCategories
+        {
+            get => _selectedExpenseCategories;
+            set
+            {
+                _selectedExpenseCategories = value;
+                RaisePropertyChanged();
+            }
+        }
 
 
         public ObservableCollection<ExpenseSource> Source { get; set; }
