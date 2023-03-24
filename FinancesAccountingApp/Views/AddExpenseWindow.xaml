@@ -79,7 +79,7 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Button Grid.Row="5" Grid.Column="0">
+            <Button Grid.Row="5" Grid.Column="0" Command="{Binding SaveCommand}">
                 <TextBlock>
                 Добавить
                 </TextBlock>

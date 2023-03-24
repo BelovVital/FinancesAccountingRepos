@@ -95,6 +95,16 @@ namespace FinancesAccounting.ViewModels
                 RaisePropertyChanged();
             }
         }
+        private ExpenseSource _selectedExpenseSource;
+        private ExpenseSource SelectedSource
+        {
+            get => _selectedExpenseSource;
+            set
+            {
+                _selectedExpenseSource = value;
+                RaisePropertyChanged();
+            }
+        }
 
 
         private DateTime? _date;
@@ -130,7 +140,12 @@ namespace FinancesAccounting.ViewModels
 
         public bool SaveCommand_CanExecute()
         {
-            return true;
+            return
+                Summa != default &&
+                Currency != default &&
+                ExpenseCategory != default &&
+                ExpenseSource != default &&
+                Dates != default;
         }
 
         private void CancelCommand_Execute()

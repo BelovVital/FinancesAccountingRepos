@@ -56,8 +56,6 @@ namespace FinancesAccountingApp.ViewModels
                 RaisePropertyChanged();
             }
         }
-
-
         private Currency _selectedcurrency;
         private Currency SelectedCurrency
         {
@@ -81,7 +79,16 @@ namespace FinancesAccountingApp.ViewModels
                 RaisePropertyChanged();
             }
         }
-
+        private ExpenseCategory _selectedExpenseCategory;
+        private ExpenseCategory SelectedCategory
+        {
+            get => _selectedExpenseCategory;
+            set
+            {
+                _selectedExpenseCategory = value;
+                RaisePropertyChanged();
+            }
+        }
 
         public ObservableCollection<ExpenseSource> Source { get; set; }
         private ExpenseSource _expenseSource;
@@ -94,7 +101,16 @@ namespace FinancesAccountingApp.ViewModels
                 RaisePropertyChanged();
             }
         }
-
+        private ExpenseSource _selectedExpenseSource;
+        private ExpenseSource SelectedSource
+        {
+            get => _selectedExpenseSource;
+            set
+            {
+                _selectedExpenseSource = value;
+                RaisePropertyChanged();
+            }
+        }
 
         private DateTime? _date;
         public DateTime? Dates
@@ -129,7 +145,12 @@ namespace FinancesAccountingApp.ViewModels
 
         public bool SaveCommand_CanExecute()
         {
-            return true;
+            return
+                Summa != default &&
+                Currency != default &&
+                ExpenseCategory != default &&
+                ExpenseSource != default &&
+                Dates != default;
         }
 
         private void CancelCommand_Execute()
