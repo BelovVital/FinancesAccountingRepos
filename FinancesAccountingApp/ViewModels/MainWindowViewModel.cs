@@ -35,10 +35,8 @@ namespace FinancesAccountingApp.ViewModels
             Incomes = new ObservableCollection<Income>(incomes);
             RaisePropertyChanged(nameof(Incomes));
 
-            var startDate = Expenses.Min(x => x.Date);
-            var endDate = Expenses.Max(x => x.Date);
-            StartDate = startDate;
-            EndDate = endDate;
+            StartDate = Expenses.Min(x => x.Date);
+            EndDate = Expenses.Max(x => x.Date);
         }
 
         private string _selectedWallet;
@@ -106,29 +104,31 @@ namespace FinancesAccountingApp.ViewModels
         public bool HasCanEditOrRemoveExpense => SelectedExpense != null;
         public bool HasCanEditOrRemoveIncome => SelectedIncome != null;
 
-        private DateTime _startDate;
+        private DateTime? _startDate;
 
         public DateTime StartDate
         {
-            get => _startDate;
+            get => _startDate ?? default;
             set
             {
                 _startDate = value;
                 RaisePropertyChanged();
-                ResetIncomesExpenses();
+                if (_endDate.HasValue && _startDate.HasValue)
+                    ResetIncomesExpenses();
             }
         }
 
-        private DateTime _endDate;
+        private DateTime? _endDate;
 
         public DateTime EndDate
         {
-            get => _endDate;
+            get => _endDate ?? default;
             set
             {
                 _endDate = value;
                 RaisePropertyChanged();
-                ResetIncomesExpenses();
+                if (_endDate.HasValue && _startDate.HasValue)
+                    ResetIncomesExpenses();
             }
         }
 
