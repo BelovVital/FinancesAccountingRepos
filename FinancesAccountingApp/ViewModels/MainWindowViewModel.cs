@@ -34,6 +34,11 @@ namespace FinancesAccountingApp.ViewModels
             var incomes = dbContext.Incomes.Where(x => x.WalletId == CurrentWallet.Id);
             Incomes = new ObservableCollection<Income>(incomes);
             RaisePropertyChanged(nameof(Incomes));
+
+            var startDate = Expenses.Min(x => x.Date);
+            var endDate = Expenses.Max(x => x.Date);
+            StartDate = startDate;
+            EndDate = endDate;
         }
 
         private string _selectedWallet;
@@ -101,27 +106,29 @@ namespace FinancesAccountingApp.ViewModels
         public bool HasCanEditOrRemoveExpense => SelectedExpense != null;
         public bool HasCanEditOrRemoveIncome => SelectedIncome != null;
 
-        private DateTime? _startDate;
+        private DateTime _startDate;
 
-        public DateTime? StartDate
+        public DateTime StartDate
         {
             get => _startDate;
             set
             {
                 _startDate = value;
                 RaisePropertyChanged();
+                ResetIncomesExpenses();
             }
         }
 
-        private DateTime? _endDate;
+        private DateTime _endDate;
 
-        public DateTime? EndDate
+        public DateTime EndDate
         {
             get => _endDate;
             set
             {
                 _endDate = value;
                 RaisePropertyChanged();
+                ResetIncomesExpenses();
             }
         }
 
@@ -250,6 +257,19 @@ namespace FinancesAccountingApp.ViewModels
 
         }
 
+        public void ResetIncomesExpenses()
+        {
+            var dbContext = new AppDbContext();
 
+            var expenses = dbContext.Expenses.Where(x => x.WalletId == CurrentWallet.Id 
+                && x.Date >= StartDate && x.Date <= EndDate);
+            Expenses = new ObservableCollection<Expense>(expenses);
+            RaisePropertyChanged(nameof(Expenses));
+
+            var incomes = dbContext.Incomes.Where(x => x.WalletId == CurrentWallet.Id
+                && x.Date >= StartDate && x.Date <= EndDate);
+            Incomes = new ObservableCollection<Income>(incomes);
+            RaisePropertyChanged(nameof(Incomes));
+        }
     }
 }
