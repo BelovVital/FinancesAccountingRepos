@@ -15,39 +15,55 @@ namespace FinancesAccountingApp.ViewModels
     internal class AddIncomeViewModel : BindableBase
     {
         AddIncomeWindow _addIncomeWindow;
-        private readonly Income _income;
-        public AddIncomeViewModel(AddIncomeWindow addIncomeWindow)
+        public AddIncomeViewModel(AddIncomeWindow addIncomeWindow, Income income)
         {
             _addIncomeWindow = addIncomeWindow;
+            Income = income;
 
             var dbcontext = new AppDbContext();
 
             var currency = dbcontext.Currencies;
-            Currencies = new ObservableCollection<Currency>(currency);
+            var _currencies = new ObservableCollection<Currency>(currency);
+            Currencies = new ObservableCollection<string>(_currencies.Select(x => x.Name));
 
             var expenseCategories = dbcontext.ExpenseCategories;
-            Categories = new ObservableCollection<ExpenseCategory>(expenseCategories);
+            var _categories = new ObservableCollection<ExpenseCategory>(expenseCategories);
+            Categories = new ObservableCollection<string>(expenseCategories.Select(x => x.Name));
 
             var expenseSource = dbcontext.ExpenseSources;
-            Source = new ObservableCollection<ExpenseSource>(expenseSource);
+            var _source = new ObservableCollection<ExpenseSource>(expenseSource);
+            Source = new ObservableCollection<string>(expenseSource.Select(x => x.Name));
+
+            Dates = DateTime.Now;
         }
 
+        private Income _income;
+        public Income Income
+        {
+            get => _income;
+            set
+            {
+                _income = value;
+                RaisePropertyChanged();
+            }
+        }
 
-        private double _summa;
-        private double Summa
+        private string _summa;
+        public string Summa
         {
             get => _summa;
             set
             {
                 _summa = value;
                 RaisePropertyChanged();
+                SaveCommand.RaiseCanExecuteChanged();
             }
         }
 
 
-        public ObservableCollection<Currency> Currencies { get; set; }
-        private Currency _currency;
-        public Currency Currency
+        public ObservableCollection<string> Currencies { get; set; }
+        private string _currency;
+        public string Currency
         {
             get => _currency;
             set
@@ -56,21 +72,22 @@ namespace FinancesAccountingApp.ViewModels
                 RaisePropertyChanged();
             }
         }
-        private Currency _selectedcurrency;
-        private Currency SelectedCurrency
+        private string _selectedcurrency;
+        public string SelectedCurrency
         {
             get => _selectedcurrency;
             set
             {
                 _selectedcurrency = value;
                 RaisePropertyChanged();
+                SaveCommand.RaiseCanExecuteChanged();
             }
         }
 
 
-        public ObservableCollection<ExpenseCategory> Categories { get; set; }
-        private ExpenseCategory _expenseCategory;
-        public ExpenseCategory ExpenseCategory
+        public ObservableCollection<string> Categories { get; set; }
+        private string _expenseCategory;
+        public string ExpenseCategory
         {
             get => _expenseCategory;
             set
@@ -79,20 +96,21 @@ namespace FinancesAccountingApp.ViewModels
                 RaisePropertyChanged();
             }
         }
-        private ExpenseCategory _selectedExpenseCategory;
-        private ExpenseCategory SelectedCategory
+        private string _selectedExpenseCategory;
+        public string SelectedCategories
         {
             get => _selectedExpenseCategory;
             set
             {
                 _selectedExpenseCategory = value;
                 RaisePropertyChanged();
+                SaveCommand.RaiseCanExecuteChanged();
             }
         }
 
-        public ObservableCollection<ExpenseSource> Source { get; set; }
-        private ExpenseSource _expenseSource;
-        public ExpenseSource ExpenseSource
+        public ObservableCollection<string> Source { get; set; }
+        private string _expenseSource;
+        public string ExpenseSource
         {
             get => _expenseSource;
             set
@@ -101,25 +119,30 @@ namespace FinancesAccountingApp.ViewModels
                 RaisePropertyChanged();
             }
         }
-        private ExpenseSource _selectedExpenseSource;
-        private ExpenseSource SelectedSource
+        private string _selectedExpenseSource;
+        public string SelectedSource
         {
             get => _selectedExpenseSource;
             set
             {
                 _selectedExpenseSource = value;
                 RaisePropertyChanged();
+                SaveCommand.RaiseCanExecuteChanged();
             }
         }
 
-        private DateTime? _date;
-        public DateTime? Dates
+
+        public Guid currentWallet;
+
+        private DateTime _date;
+        public DateTime Dates
         {
             get => _date;
             set
             {
                 _date = value;
                 RaisePropertyChanged();
+                SaveCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -134,11 +157,13 @@ namespace FinancesAccountingApp.ViewModels
 
         private void SaveCommand_Execute()
         {
-            _income.Summa = Summa;
-            _income.Currency = Currency.Name;
-            _income.Category = ExpenseCategory.Name;
-            _income.Source = ExpenseSource.Name;
-            _income.Date = Dates.Value;
+            Income.Summa = double.Parse(Summa);
+            Income.Currency = SelectedCurrency;
+            Income.Category = SelectedCategories;
+            Income.Source = SelectedSource;
+            Income.Date = Dates;
+            Income.WalletId = 
+            Income.Id = Guid.Empty.Equals(Income.Id) ? Guid.NewGuid() : Income.Id;
             _addIncomeWindow.DialogResult = true;
             _addIncomeWindow.Close();
         }
@@ -146,10 +171,13 @@ namespace FinancesAccountingApp.ViewModels
         public bool SaveCommand_CanExecute()
         {
             return
-                Summa != default &&
-                Currency != default &&
-                ExpenseCategory != default &&
-                ExpenseSource != default &&
+                !string.IsNullOrWhiteSpace(Summa) &&
+                !string.IsNullOrWhiteSpace(Currency) &&
+                !string.IsNullOrWhiteSpace(ExpenseCategory) &&
+                !string.IsNullOrWhiteSpace(ExpenseSource) &&
+                SelectedCurrency != null &&
+                SelectedCategories != null &&
+                SelectedSource != null &&
                 Dates != default;
         }
 

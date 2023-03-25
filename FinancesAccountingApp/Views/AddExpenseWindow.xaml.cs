@@ -1,4 +1,5 @@
 using FinancesAccounting.ViewModels;
+using FinancesAccountingApp.Models.DataBase.Entities;
 using System;
 ﻿using System;
 using System.Collections.Generic;
@@ -21,10 +22,10 @@ namespace FinancesAccountingApp.Views
     /// </summary>
     public partial class AddExpenseWindow : Window
     {
-        public AddExpenseWindow()
+        public AddExpenseWindow(Expense expense)
         {
             InitializeComponent();
-            DataContext = new AddExpenseViewModel(this);
+            DataContext = new AddExpenseViewModel(this,expense);
         }
     }
 }

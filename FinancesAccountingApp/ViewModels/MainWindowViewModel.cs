@@ -102,15 +102,14 @@ namespace FinancesAccountingApp.ViewModels
         public void AddCommand_Execute()
         {
             var expense = new Expense();
-            var addWindow = new AddExpenseWindow();
+            var addWindow = new AddExpenseWindow(expense);
             if (addWindow.ShowDialog() == true)
             {
                 try
                 {
                     using (var dbContext = new AppDbContext())
                     {
-                        DbSet<Expense> dbSet = dbContext.Set<Expense>();
-                        dbSet.Add(expense);
+                        dbContext.Add(expense);
                         dbContext.SaveChanges();
                     }
                 }
@@ -118,8 +117,7 @@ namespace FinancesAccountingApp.ViewModels
                 {
                     MessageBox.Show(ex.Message);
                 }
-                var collection = Expenses;
-                collection.Add(expense);
+                Expenses.Add(expense);
             }
         }
 
@@ -160,15 +158,14 @@ namespace FinancesAccountingApp.ViewModels
         public void AddIncomeCommand_Execute()
         {
             var income = new Income();
-            var addWindow = new AddIncomeWindow();
+            var addWindow = new AddIncomeWindow(income,);
             if (addWindow.ShowDialog() == true)
             {
                 try
                 {
                     using (var dbContext = new AppDbContext())
                     {
-                        DbSet<Income> dbSet = dbContext.Set<Income>();
-                        dbSet.Add(income);
+                        dbContext.Add(income);
                         dbContext.SaveChanges();
                     }
                 }
@@ -176,8 +173,7 @@ namespace FinancesAccountingApp.ViewModels
                 {
                     MessageBox.Show(ex.Message);
                 }
-                var collection = Incomes;
-                collection.Add(income);
+                Incomes.Add(income);
             }
         }
 
@@ -193,7 +189,7 @@ namespace FinancesAccountingApp.ViewModels
                 using (var dbContext = new AppDbContext())
                 {
                     DbSet<Income> dbSet = dbContext.Set<Income>();
-                    dbSet.Remove(SelectedIncome);
+                    dbContext.Remove(SelectedIncome);
                     dbContext.SaveChanges();
                 }
                 ObservableCollection<Income> itemsCollection = Incomes;
@@ -212,28 +208,28 @@ namespace FinancesAccountingApp.ViewModels
         }
 
 
-        private DelegateCommand _accountCommand;
-        public DelegateCommand AccountCommand =>
-                    _accountCommand ??= new DelegateCommand(AccountCommand_Execute);
+        //private DelegateCommand _accountCommand;
+        //public DelegateCommand AccountCommand =>
+        //            _accountCommand ??= new DelegateCommand(AccountCommand_Execute);
 
-        public void AccountCommand_Execute()
-        {
-            var addWindow = new AccountWindow();
-            if (addWindow.ShowDialog() == true)
-            {
-                try
-                {
-                    using (var dbContext = new AppDbContext())
-                    {
+        //public void AccountCommand_Execute()
+        //{
+        //    var addWindow = new AccountWindow();
+        //    if (addWindow.ShowDialog() == true)
+        //    {
+        //        try
+        //        {
+        //            using (var dbContext = new AppDbContext())
+        //            {
 
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-            }
-        }
+        //            }
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            MessageBox.Show(ex.Message);
+        //        }
+        //    }
+        //}
 
 
     }

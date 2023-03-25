@@ -3,7 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:FinancesAccountingApp.Views"
+        xmlns:local="clr-namespace:FinancesAccountingApp.Views" 
+        xmlns:viewmodels1="clr-namespace:FinancesAccounting.ViewModels"
+        d:DataContext="{d:DesignInstance Type=viewmodels1:AddExpenseViewModel}"
         mc:Ignorable="d"
         ResizeMode="NoResize"
         Title="AddExpenseWindow" Height="525" Width="450">
@@ -53,7 +55,7 @@
             Категория
         </TextBlock>
         <ComboBox Grid.Row="2" Grid.Column="1" Margin="25"
-                  SelectedItem="{Binding SelectedCategory, UpdateSourceTrigger=PropertyChanged}"
+                  SelectedItem="{Binding SelectedCategories, UpdateSourceTrigger=PropertyChanged}"
                   ItemsSource="{Binding Categories}"/>
         <Button Grid.Row="2" Grid.Column="2" Height="30" Width="30" Margin="5">
             <TextBlock>+</TextBlock>
@@ -72,7 +74,7 @@
         <TextBlock Grid.Row="4" Margin="25">
             Дата
         </TextBlock>
-        <DatePicker Grid.Row="4" Grid.Column="1" Margin="25" SelectedDate="{Binding Date}"/>
+        <DatePicker Grid.Row="4" Grid.Column="1" Margin="25" SelectedDate="{Binding Dates}"/>
 
         <Grid Grid.Row="5" Grid.ColumnSpan="3">
             <Grid.ColumnDefinitions>
@@ -84,7 +86,7 @@
                 Добавить
                 </TextBlock>
             </Button>
-            <Button Grid.Column="2">
+            <Button Grid.Column="2" Command="{Binding CancelCommand}">
                 <TextBlock>
                 Отмена
                 </TextBlock>
