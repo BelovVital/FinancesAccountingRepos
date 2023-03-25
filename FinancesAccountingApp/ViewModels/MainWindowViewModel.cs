@@ -23,19 +23,21 @@ namespace FinancesAccountingApp.ViewModels
             var wallet = dbContext.Wallets;
             Wallets = new ObservableCollection<Wallet>(wallet);
 
-            SelectedWallet = Wallets.FirstOrDefault();
-            
-            var expenses = dbContext.Expenses.Where(x => x.WalletId == SelectedWallet.Id);
+            CurrentWallet = Wallets.FirstOrDefault();
+            WalletNames = new ObservableCollection<string>(Wallets.Select(x => x.Name));
+            SelectedWallet = WalletNames.FirstOrDefault();
+
+            var expenses = dbContext.Expenses.Where(x => x.WalletId == CurrentWallet.Id);
             Expenses = new ObservableCollection<Expense>(expenses);
             RaisePropertyChanged(nameof(Expenses));
 
-            var incomes = dbContext.Incomes.Where(x => x.WalletId == SelectedWallet.Id);
+            var incomes = dbContext.Incomes.Where(x => x.WalletId == CurrentWallet.Id);
             Incomes = new ObservableCollection<Income>(incomes);
             RaisePropertyChanged(nameof(Incomes));
         }
 
-        private Wallet _selectedWallet;
-        public Wallet SelectedWallet 
+        private string _selectedWallet;
+        public string SelectedWallet
         {
             get => _selectedWallet;
             set
@@ -56,6 +58,8 @@ namespace FinancesAccountingApp.ViewModels
                 RaisePropertyChanged();
             }
         }
+
+        public Wallet CurrentWallet {get; set;}
 
         private Expense _selectedExpense;
         public Expense SelectedExpense
@@ -80,6 +84,17 @@ namespace FinancesAccountingApp.ViewModels
         }
 
         public ObservableCollection<Wallet> Wallets { get; set; }
+
+        private ObservableCollection<string> _walletNames;
+        public ObservableCollection<string> WalletNames 
+        {
+            get => _walletNames;
+            set
+            {
+                _walletNames = value;
+                RaisePropertyChanged();
+            } 
+        }
         public ObservableCollection<Expense> Expenses { get; set; }
         public ObservableCollection<Income> Incomes { get; set; }
 
@@ -117,15 +132,14 @@ namespace FinancesAccountingApp.ViewModels
         public void AddCommand_Execute()
         {
             var expense = new Expense();
-            var addWindow = new AddExpenseWindow();
+            var addWindow = new AddExpenseWindow(expense);
             if (addWindow.ShowDialog() == true)
             {
                 try
                 {
                     using (var dbContext = new AppDbContext())
                     {
-                        DbSet<Expense> dbSet = dbContext.Set<Expense>();
-                        dbSet.Add(expense);
+                        dbContext.Add(expense);
                         dbContext.SaveChanges();
                     }
                 }
@@ -133,8 +147,7 @@ namespace FinancesAccountingApp.ViewModels
                 {
                     MessageBox.Show(ex.Message);
                 }
-                var collection = Expenses;
-                collection.Add(expense);
+                Expenses.Add(expense);
             }
         }
 
@@ -175,15 +188,14 @@ namespace FinancesAccountingApp.ViewModels
         public void AddIncomeCommand_Execute()
         {
             var income = new Income();
-            var addWindow = new AddIncomeWindow();
+            var addWindow = new AddIncomeWindow(income);
             if (addWindow.ShowDialog() == true)
             {
                 try
                 {
                     using (var dbContext = new AppDbContext())
                     {
-                        DbSet<Income> dbSet = dbContext.Set<Income>();
-                        dbSet.Add(income);
+                        dbContext.Add(income);
                         dbContext.SaveChanges();
                     }
                 }
@@ -233,21 +245,9 @@ namespace FinancesAccountingApp.ViewModels
 
         public void AccountCommand_Execute()
         {
-            var addWindow = new AccountWindow();
-            if (addWindow.ShowDialog() == true)
-            {
-                try
-                {
-                    using (var dbContext = new AppDbContext())
-                    {
+            var addWindow = new ChartWindow(Incomes, Expenses, CurrentWallet);
+            addWindow.ShowDialog();
 
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-            }
         }
 
 

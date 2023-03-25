@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FinancesAccountingApp.Models.DataBase.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,7 +20,7 @@ namespace FinancesAccountingApp.Views
     /// </summary>
     public partial class AddIncomeWindow : Window
     {
-        public AddIncomeWindow()
+        public AddIncomeWindow(Income income)
         {
             InitializeComponent();
         }
