@@ -41,7 +41,8 @@
             </Grid.ColumnDefinitions>
 
             <ComboBox MaxHeight="30" Margin="5" FontSize="12"
-                      ItemsSource="{Binding Wallets}"/>
+                      ItemsSource="{Binding Wallets, UpdateSourceTrigger=PropertyChanged}"
+                      SelectedItem="{Binding CurrentWallet, UpdateSourceTrigger=PropertyChanged}"/>
             <Button Grid.Column="1" MaxHeight="30" MaxWidth="100" Margin="5" Content="Отчет/График" FontSize="12"
                     Command="{Binding AccountCommand}"/>
             <DatePicker Grid.Column="2" MaxHeight="30" MaxWidth="150" Margin="5" FontSize="12"

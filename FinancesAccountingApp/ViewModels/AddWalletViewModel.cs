@@ -17,12 +17,14 @@ namespace FinancesAccountingApp.ViewModels
         public AddWalletViewModel(AddWalletWindow addWalletWindow, Wallet wallet)
         {
             _addWalletWindow = addWalletWindow;
+            Wallet = wallet;
 
             var dbcontext = new AppDbContext();
 
             var currency = dbcontext.Currencies;
             var _currencies = new ObservableCollection<Currency>(currency);
             Currencies = new ObservableCollection<string>(_currencies.Select(x => x.Name));
+            SelectedCurrency = Currencies.FirstOrDefault();
         }
 
         AddWalletWindow _addWalletWindow;
@@ -38,24 +40,24 @@ namespace FinancesAccountingApp.ViewModels
             }
         }
 
-        private string _Name;
+        private string _name;
         public string Name
         {
-            get => _Name;
+            get => _name;
             set 
             { 
-                _Name = value; 
+                _name = value; 
                 RaisePropertyChanged();
             }
         }
 
-        private string _Summa;
+        private string _summa;
         public string Summa
         {
-            get => _Summa;
+            get => _summa;
             set
             {
-                _Summa = value;
+                _summa = value;
                 RaisePropertyChanged();
             }
         }
@@ -70,13 +72,22 @@ namespace FinancesAccountingApp.ViewModels
                 RaisePropertyChanged();
             }
         }
-        public ObservableCollection<string> Currencies { get; set; }
+        private ObservableCollection<string> _currencies;
+        public ObservableCollection<string> Currencies 
+        { 
+            get => _currencies;
+            set
+            {
+                _currencies = value;
+                RaisePropertyChanged();
+            }
+        }
 
         private DelegateCommand _saveCommand;
         public DelegateCommand SaveCommand =>
             _saveCommand ??= new DelegateCommand(SaveCommand_Execute, SaveCommand_CanExecute);
 
-        private void SaveCommand_Execute()
+        public void SaveCommand_Execute()
         {
             Wallet.Name = Name;
             Wallet.Summa = double.Parse(Summa);
@@ -89,7 +100,9 @@ namespace FinancesAccountingApp.ViewModels
 
         public bool SaveCommand_CanExecute()
         {
-            return !string.IsNullOrWhiteSpace(Summa);
+            return true;
+            //return !string.IsNullOrWhiteSpace(Summa) 
+            //    && !string.IsNullOrWhiteSpace(Name);
         }
 
         private DelegateCommand _cancelCommand;
