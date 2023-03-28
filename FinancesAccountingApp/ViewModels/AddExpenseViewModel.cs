@@ -12,13 +12,14 @@ using System.Threading.Tasks;
 
 namespace FinancesAccounting.ViewModels
 {
-    internal class AddExpenseViewModel : BindableBase
+    public class AddExpenseViewModel : BindableBase
     {
         AddExpenseWindow _addExpenseWindow; 
-        public AddExpenseViewModel(AddExpenseWindow addExpenseWindow, Expense expense) 
+        public AddExpenseViewModel(AddExpenseWindow addExpenseWindow, Expense expense, Guid walletId) 
         {
             _addExpenseWindow = addExpenseWindow;
             Expense = expense;
+            _walletId= walletId;
             
             var dbcontext = new AppDbContext();
 
@@ -35,8 +36,10 @@ namespace FinancesAccounting.ViewModels
             Source = new ObservableCollection<string>(expenseSource.Select(x => x.Name));
 
             Dates = DateTime.Now;
-
         }
+
+        Guid _walletId;
+
         private Expense _expense;
         public Expense Expense
         {
@@ -60,7 +63,6 @@ namespace FinancesAccounting.ViewModels
             }
         }
 
-
         public ObservableCollection<string> Currencies { get; set; }
         private string _currency;
         public string Currency
@@ -72,6 +74,7 @@ namespace FinancesAccounting.ViewModels
                 RaisePropertyChanged();
             }
         }
+
         private string _selectedcurrency;
         public string SelectedCurrency
         {
@@ -84,7 +87,6 @@ namespace FinancesAccounting.ViewModels
             }
         }
 
-
         public ObservableCollection<string> Categories { get; set; }
         private string _expenseCategory;
         public string ExpenseCategory
@@ -96,6 +98,7 @@ namespace FinancesAccounting.ViewModels
                 RaisePropertyChanged();
             }
         }
+
         private string _selectedExpenseCategories;
         public string SelectedCategories
         {
@@ -108,7 +111,6 @@ namespace FinancesAccounting.ViewModels
             }
         }
 
-
         public ObservableCollection<string> Source { get; set; }
         private string _expenseSource;
         public string ExpenseSource
@@ -120,6 +122,7 @@ namespace FinancesAccounting.ViewModels
                 RaisePropertyChanged();
             }
         }
+
         private string _selectedExpenseSource;
         public string SelectedSource
         {
@@ -131,7 +134,6 @@ namespace FinancesAccounting.ViewModels
                 SaveCommand.RaiseCanExecuteChanged();
             }
         }
-
 
         private DateTime _date;
         public DateTime Dates
@@ -145,14 +147,9 @@ namespace FinancesAccounting.ViewModels
             }
         }
 
-
         private DelegateCommand _saveCommand;
-        private DelegateCommand _cancelCommand;
         public DelegateCommand SaveCommand =>
             _saveCommand ??= new DelegateCommand(SaveCommand_Execute, SaveCommand_CanExecute);
-        public DelegateCommand CancelCommand =>
-            _cancelCommand ??= new DelegateCommand(CancelCommand_Execute);
-
 
         public void SaveCommand_Execute()
         {
@@ -161,6 +158,7 @@ namespace FinancesAccounting.ViewModels
             Expense.Category = SelectedCategories;
             Expense.Source = SelectedSource;
             Expense.Date = Dates;
+            Expense.WalletId = _walletId;
             Expense.Id = Guid.Empty.Equals(Expense.Id)? Guid.NewGuid() : Expense.Id;
             _addExpenseWindow.DialogResult = true;
             _addExpenseWindow.Close();
@@ -168,15 +166,12 @@ namespace FinancesAccounting.ViewModels
 
         public bool SaveCommand_CanExecute()
         {
-            return true;
-                //!string.IsNullOrWhiteSpace(Summa) &&
-                //!string.IsNullOrWhiteSpace(Currency) &&
-                //!string.IsNullOrWhiteSpace(ExpenseCategory) &&
-                //!string.IsNullOrWhiteSpace(ExpenseSource) &&
-                //SelectedCurrency != null &&
-                //SelectedCategories != null &&
-                //SelectedSource != null;
+            return !string.IsNullOrWhiteSpace(Summa);
         }
+
+        private DelegateCommand _cancelCommand;
+        public DelegateCommand CancelCommand =>
+            _cancelCommand ??= new DelegateCommand(CancelCommand_Execute);
 
         private void CancelCommand_Execute()
         {

@@ -30,14 +30,14 @@ namespace FinancesAccountingApp.ViewModels
             Incomes = new ObservableCollection<Income>(incomes);
         }
 
-        private Wallet _wallet;
+        private Wallet _selectedwallet;
 
-        public Wallet Wallet
+        public Wallet SelectedWallet
         {
-            get => _wallet;
+            get => _selectedwallet;
             set
             {
-                _wallet = value;
+                _selectedwallet = value;
                 RaisePropertyChanged();
             }
         }
@@ -72,7 +72,6 @@ namespace FinancesAccountingApp.ViewModels
         public bool HasCanEditOrRemoveIncome => SelectedIncome != null;
 
         private DateTime? _startDate;
-
         public DateTime? StartDate
         {
             get => _startDate;
@@ -84,7 +83,6 @@ namespace FinancesAccountingApp.ViewModels
         }
 
         private DateTime? _endDate;
-
         public DateTime? EndDate
         {
             get => _endDate;
@@ -102,14 +100,14 @@ namespace FinancesAccountingApp.ViewModels
         public void AddCommand_Execute()
         {
             var expense = new Expense();
-            var addWindow = new AddExpenseWindow(expense);
+            var addWindow = new AddExpenseWindow(expense, SelectedWallet.Id);
             if (addWindow.ShowDialog() == true)
             {
                 try
                 {
                     using (var dbContext = new AppDbContext())
                     {
-                        dbContext.Add(expense);
+                        dbContext.Expenses.Add(expense);
                         dbContext.SaveChanges();
                     }
                 }
@@ -158,14 +156,14 @@ namespace FinancesAccountingApp.ViewModels
         public void AddIncomeCommand_Execute()
         {
             var income = new Income();
-            var addWindow = new AddIncomeWindow(income,);
+            var addWindow = new AddIncomeWindow(income, SelectedWallet.Id);
             if (addWindow.ShowDialog() == true)
             {
                 try
                 {
                     using (var dbContext = new AppDbContext())
                     {
-                        dbContext.Add(income);
+                        dbContext.Incomes.Add(income);
                         dbContext.SaveChanges();
                     }
                 }
@@ -208,29 +206,60 @@ namespace FinancesAccountingApp.ViewModels
         }
 
 
-        //private DelegateCommand _accountCommand;
-        //public DelegateCommand AccountCommand =>
-        //            _accountCommand ??= new DelegateCommand(AccountCommand_Execute);
+        private DelegateCommand _addWalletCommand;
+        public DelegateCommand AddWalletCommand =>
+                    _addWalletCommand ??= new DelegateCommand(AddWalletCommand_Execute);
 
-        //public void AccountCommand_Execute()
-        //{
-        //    var addWindow = new AccountWindow();
-        //    if (addWindow.ShowDialog() == true)
-        //    {
-        //        try
-        //        {
-        //            using (var dbContext = new AppDbContext())
-        //            {
+        public void AddWalletCommand_Execute()
+        {
+            var wallet = new Wallet();
+            var addWindow = new AddWalletWindow(wallet);
+            if (addWindow.ShowDialog() == true)
+            {
+                try
+                {
+                    using (var dbContext = new AppDbContext())
+                    {
+                        dbContext.Wallets.Add(wallet);
+                        dbContext.SaveChanges();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+                Wallets.Add(wallet);
+            }
+        }
 
-        //            }
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            MessageBox.Show(ex.Message);
-        //        }
-        //    }
-        //}
+        private DelegateCommand _deleteWalletCommand;
 
+        public DelegateCommand DeleteWalletCommand =>
+                            _deleteWalletCommand ??= new DelegateCommand(DeleteWalletCommand_Execute, DeleteWalletCommand_CanExecute);
 
+        protected virtual void DeleteWalletCommand_Execute()
+        {
+            try
+            {
+                using (var dbContext = new AppDbContext())
+                {
+                    DbSet<Income> dbSet = dbContext.Set<Income>();
+                    dbContext.Remove(SelectedIncome);
+                    dbContext.SaveChanges();
+                }
+                ObservableCollection<Income> itemsCollection = Incomes;
+                itemsCollection.Remove(SelectedIncome);
+                itemsCollection = null;
+                SelectedExpense = null;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+        public bool DeleteWalletCommand_CanExecute()
+        {
+            return SelectedWallet != null;
+        }
     }
 }

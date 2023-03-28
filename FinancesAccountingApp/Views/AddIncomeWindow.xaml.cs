@@ -21,10 +21,10 @@ namespace FinancesAccountingApp.Views
     /// </summary>
     public partial class AddIncomeWindow : Window
     {
-        public AddIncomeWindow(Income income)
+        public AddIncomeWindow(Income income, Guid walletId)
         {
             InitializeComponent();
-            DataContext = new AddIncomeViewModel(this,income);
+            DataContext = new AddIncomeViewModel(this, income, walletId);
         }
     }
 }

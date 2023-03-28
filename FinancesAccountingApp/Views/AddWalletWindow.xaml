@@ -1,0 +1,48 @@
+﻿<Window x:Class="FinancesAccountingApp.Views.AddWalletWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FinancesAccountingApp.Views"
+        xmlns:viewModel="clr-namespace:FinancesAccountingApp.ViewModels"
+        mc:Ignorable="d"
+        Title="AddWalletWindow" Height="450" Width="400">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+        
+        <TextBlock Text="Название" Margin="20" FontSize="15" VerticalAlignment="Center"/>
+        <TextBox Grid.Row="0" Grid.Column="1" Margin="20" FontSize="15" VerticalAlignment="Center"
+                 Text="{Binding Name}"/>
+        
+        <TextBlock Grid.Row="1" Text="Сумма"  Margin="20" FontSize="15" VerticalAlignment="Center"/>
+        <TextBox Grid.Row="1" Grid.Column="1" Margin="20" FontSize="15" VerticalAlignment="Center"
+                 Text="{Binding Summa}"/>
+        
+        <TextBlock Grid.Row="2" Text="Валюта"  Margin="20" FontSize="15" VerticalAlignment="Center"/>
+        <ComboBox Grid.Row="2" Grid.Column="1" Margin="20" FontSize="15" VerticalAlignment="Center"
+                  ItemsSource="{Binding Currencies, UpdateSourceTrigger=PropertyChanged}"
+                  SelectedItem="{Binding SelectedCurrency}"/>
+
+        <Grid Grid.Row="3" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Button Content="Сохранить" MaxHeight="50" MaxWidth="120"
+                    Command="{Binding SaveCommand}"/>
+            <Button Grid.Column="1" Content="Отмена" MaxHeight="50" MaxWidth="120"
+                    Command="{Binding CancelCommand}"/>
+        </Grid>
+        
+    </Grid>
+</Window>

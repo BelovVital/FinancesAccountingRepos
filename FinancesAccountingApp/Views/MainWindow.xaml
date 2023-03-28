@@ -17,8 +17,8 @@
         <Grid>
             <Menu Background="White" MaxHeight="20" FontSize="12">
                 <MenuItem Header="Кошелек">
-                    <MenuItem Header="Создать"/>
-                    <MenuItem Header="Удалить"/>
+                    <MenuItem Header="Создать" Command="{Binding AddWalletCommand}"/>
+                    <MenuItem Header="Удалить" Command="{Binding DeleteWalletCommand}"/>
                     <MenuItem Header="Отчет/График"/>
                     <MenuItem Header="-"/>
                     <MenuItem Header="Выход"/>

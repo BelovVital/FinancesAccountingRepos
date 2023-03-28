@@ -15,10 +15,11 @@ namespace FinancesAccountingApp.ViewModels
     internal class AddIncomeViewModel : BindableBase
     {
         AddIncomeWindow _addIncomeWindow;
-        public AddIncomeViewModel(AddIncomeWindow addIncomeWindow, Income income)
+        public AddIncomeViewModel(AddIncomeWindow addIncomeWindow, Income income, Guid walletId)
         {
             _addIncomeWindow = addIncomeWindow;
             Income = income;
+            _walletId = walletId;
 
             var dbcontext = new AppDbContext();
 
@@ -36,6 +37,8 @@ namespace FinancesAccountingApp.ViewModels
 
             Dates = DateTime.Now;
         }
+
+        Guid _walletId;
 
         private Income _income;
         public Income Income
@@ -60,8 +63,6 @@ namespace FinancesAccountingApp.ViewModels
             }
         }
 
-
-        public ObservableCollection<string> Currencies { get; set; }
         private string _currency;
         public string Currency
         {
@@ -72,6 +73,7 @@ namespace FinancesAccountingApp.ViewModels
                 RaisePropertyChanged();
             }
         }
+
         private string _selectedcurrency;
         public string SelectedCurrency
         {
@@ -83,9 +85,8 @@ namespace FinancesAccountingApp.ViewModels
                 SaveCommand.RaiseCanExecuteChanged();
             }
         }
+        public ObservableCollection<string> Currencies { get; set; }
 
-
-        public ObservableCollection<string> Categories { get; set; }
         private string _expenseCategory;
         public string ExpenseCategory
         {
@@ -96,6 +97,7 @@ namespace FinancesAccountingApp.ViewModels
                 RaisePropertyChanged();
             }
         }
+
         private string _selectedExpenseCategory;
         public string SelectedCategories
         {
@@ -107,8 +109,8 @@ namespace FinancesAccountingApp.ViewModels
                 SaveCommand.RaiseCanExecuteChanged();
             }
         }
+        public ObservableCollection<string> Categories { get; set; }
 
-        public ObservableCollection<string> Source { get; set; }
         private string _expenseSource;
         public string ExpenseSource
         {
@@ -118,6 +120,7 @@ namespace FinancesAccountingApp.ViewModels
                 _expenseSource = value;
                 RaisePropertyChanged();
             }
+
         }
         private string _selectedExpenseSource;
         public string SelectedSource
@@ -131,8 +134,7 @@ namespace FinancesAccountingApp.ViewModels
             }
         }
 
-
-        public Guid currentWallet;
+        public ObservableCollection<string> Source { get; set; }
 
         private DateTime _date;
         public DateTime Dates
@@ -146,14 +148,9 @@ namespace FinancesAccountingApp.ViewModels
             }
         }
 
-
         private DelegateCommand _saveCommand;
-        private DelegateCommand _cancelCommand;
         public DelegateCommand SaveCommand =>
             _saveCommand ??= new DelegateCommand(SaveCommand_Execute, SaveCommand_CanExecute);
-        public DelegateCommand CancelCommand =>
-            _cancelCommand ??= new DelegateCommand(CancelCommand_Execute);
-
 
         private void SaveCommand_Execute()
         {
@@ -162,7 +159,7 @@ namespace FinancesAccountingApp.ViewModels
             Income.Category = SelectedCategories;
             Income.Source = SelectedSource;
             Income.Date = Dates;
-            Income.WalletId = 
+            Income.WalletId = _walletId;
             Income.Id = Guid.Empty.Equals(Income.Id) ? Guid.NewGuid() : Income.Id;
             _addIncomeWindow.DialogResult = true;
             _addIncomeWindow.Close();
@@ -170,16 +167,12 @@ namespace FinancesAccountingApp.ViewModels
 
         public bool SaveCommand_CanExecute()
         {
-            return
-                !string.IsNullOrWhiteSpace(Summa) &&
-                !string.IsNullOrWhiteSpace(Currency) &&
-                !string.IsNullOrWhiteSpace(ExpenseCategory) &&
-                !string.IsNullOrWhiteSpace(ExpenseSource) &&
-                SelectedCurrency != null &&
-                SelectedCategories != null &&
-                SelectedSource != null &&
-                Dates != default;
+            return !string.IsNullOrWhiteSpace(Summa);
         }
+
+        private DelegateCommand _cancelCommand;
+        public DelegateCommand CancelCommand =>
+             _cancelCommand ??= new DelegateCommand(CancelCommand_Execute);
 
         private void CancelCommand_Execute()
         {
