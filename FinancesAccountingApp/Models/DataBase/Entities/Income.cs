@@ -17,5 +17,6 @@ namespace FinancesAccountingApp.Models.DataBase.Entities
         public Guid WalletId { get; set; }
         [ForeignKey("WalletId")]
         public Wallet Wallet { get; set; }
+
     }
 }

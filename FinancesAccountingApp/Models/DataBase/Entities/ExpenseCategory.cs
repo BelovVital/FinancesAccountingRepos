@@ -9,5 +9,12 @@ namespace FinancesAccountingApp.Models.DataBase.Entities
     public class ExpenseCategory : Entity
     {
         public string Name { get; set; }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
+
+
 }

@@ -1,0 +1,48 @@
+﻿<Window x:Class="FinancesAccountingApp.Views.AddIncomeSourceWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FinancesAccountingApp.Views"
+        xmlns:viewmodels1="clr-namespace:FinancesAccounting.ViewModels"
+        mc:Ignorable="d"
+        Title="AddIncomeSourceWindow" Height="450" Width="450">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="5*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+
+        <DataGrid Grid.Row="0" Margin="10" 
+                  ItemsSource="{Binding IncomeSources, UpdateSourceTrigger=PropertyChanged}"
+                  SelectedItem="{Binding SelectedIncomeSource, UpdateSourceTrigger=PropertyChanged}">
+        </DataGrid>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="Новое" Margin="30 0 0 0" FontSize="14" VerticalAlignment="Center" />
+            <TextBox Grid.Column="1" Margin="0 0 20 00" MaxHeight="35" FontSize="14"
+                     Text="{Binding NewName, UpdateSourceTrigger=PropertyChanged}"/>
+        </Grid>
+
+        <Grid Grid.Row="2" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0" Content="Добавить" Margin="5" MaxHeight="40" MaxWidth="110"
+                    Command="{Binding SaveCommand}" FontSize="13"/>
+            <Button Grid.Column="1" Content="Удалить" Margin="5" MaxHeight="40" MaxWidth="110"
+                    Command="{Binding DeleteCommand}" FontSize="13"/>
+            <Button Grid.Column="2" Content="Отмена" Margin="5" MaxHeight="40" MaxWidth="110"
+                    Command="{Binding CancelCommand}" FontSize="13"/>
+        </Grid>
+    </Grid>
+</Window>

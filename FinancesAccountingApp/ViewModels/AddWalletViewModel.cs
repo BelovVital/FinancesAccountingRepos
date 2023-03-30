@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace FinancesAccountingApp.ViewModels
 {
@@ -22,8 +23,7 @@ namespace FinancesAccountingApp.ViewModels
             var dbcontext = new AppDbContext();
 
             var currency = dbcontext.Currencies;
-            var _currencies = new ObservableCollection<Currency>(currency);
-            Currencies = new ObservableCollection<string>(_currencies.Select(x => x.Name));
+            Currencies = new ObservableCollection<Currency>(currency);
             SelectedCurrency = Currencies.FirstOrDefault();
         }
 
@@ -62,8 +62,8 @@ namespace FinancesAccountingApp.ViewModels
             }
         }
 
-        private string _selectedCurrency;
-        public string SelectedCurrency
+        private Currency _selectedCurrency;
+        public Currency SelectedCurrency
         {
             get => _selectedCurrency;
             set
@@ -72,16 +72,19 @@ namespace FinancesAccountingApp.ViewModels
                 RaisePropertyChanged();
             }
         }
-        private ObservableCollection<string> _currencies;
-        public ObservableCollection<string> Currencies 
+
+        private Currency _currency;
+        public Currency Currency 
         { 
-            get => _currencies;
+            get => _currency;
             set
             {
-                _currencies = value;
+                _currency = value;
                 RaisePropertyChanged();
             }
         }
+        public ObservableCollection<Currency> Currencies { get; set; }
+
 
         private DelegateCommand _saveCommand;
         public DelegateCommand SaveCommand =>
@@ -91,7 +94,7 @@ namespace FinancesAccountingApp.ViewModels
         {
             Wallet.Name = Name;
             Wallet.Summa = double.Parse(Summa);
-            Wallet.Currency = SelectedCurrency;
+            Wallet.Currency = SelectedCurrency.Name;
             Wallet.Date = DateTime.Now;
             Wallet.Id = Guid.Empty.Equals(Wallet.Id) ? Guid.NewGuid() : Wallet.Id;
             _addWalletWindow.DialogResult = true;
@@ -113,6 +116,30 @@ namespace FinancesAccountingApp.ViewModels
         {
             _addWalletWindow.DialogResult = false;
             _addWalletWindow.Close();
+        }
+
+
+        private DelegateCommand _addCurrencyCommand;
+        public DelegateCommand AddCurrencyCommand =>
+             _addCurrencyCommand ??= new DelegateCommand(AddCurrencyCommand_Execute);
+        private void AddCurrencyCommand_Execute()
+        {
+            var addWindow = new AddCurrencyWindow();
+            if (addWindow.ShowDialog() == true)
+            {
+                try
+                {
+                    using (var dbContext = new AppDbContext())
+                    {
+                        var currency = dbContext.Currencies;
+                        Currencies = new ObservableCollection<Currency>(currency);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
         }
     }
 }

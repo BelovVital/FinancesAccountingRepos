@@ -11,5 +11,11 @@ namespace FinancesAccountingApp.Models.DataBase.Entities
         public string Name { get; set; }
         public string Scale { get; set; }
         public DateTime Date { get; set; }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
+
 }

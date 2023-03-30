@@ -9,5 +9,11 @@ namespace FinancesAccountingApp.Models.DataBase.Entities
     public class IncomeSource : Entity
     {
         public string Name { get; set; }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
+
 }

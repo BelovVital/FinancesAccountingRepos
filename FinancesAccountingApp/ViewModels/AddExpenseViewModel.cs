@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace FinancesAccounting.ViewModels
 {
@@ -177,6 +178,84 @@ namespace FinancesAccounting.ViewModels
         {
             _addExpenseWindow.DialogResult = false;
             _addExpenseWindow.Close();
+        }
+
+
+        private DelegateCommand _addCurrencyCommand;
+        public DelegateCommand AddCurrencyCommand =>
+             _addCurrencyCommand ??= new DelegateCommand(AddCurrencyCommand_Execute);
+
+        private void AddCurrencyCommand_Execute()
+        {
+            var addWindow = new AddCurrencyWindow();
+            if (addWindow.ShowDialog() == true)
+            {
+                try
+                {
+                    using (var dbContext = new AppDbContext())
+                    {
+                        var currency = dbContext.Currencies;
+                        var _currencies = new ObservableCollection<Currency>(currency);
+                        Currencies = new ObservableCollection<string>(_currencies.Select(x => x.Name));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+
+
+        private DelegateCommand _addCategoryCommand;
+        public DelegateCommand AddCategoryCommand =>
+             _addCategoryCommand ??= new DelegateCommand(AddCategoryCommand_Execute);
+
+        private void AddCategoryCommand_Execute()
+        {
+            var addWindow = new AddExpenseCategoryWindow();
+            if (addWindow.ShowDialog() == true)
+            {
+                try
+                {
+                    using (var dbContext = new AppDbContext())
+                    {
+                        var expenseCategories = dbContext.ExpenseCategories;
+                        var _categories = new ObservableCollection<ExpenseCategory>(expenseCategories);
+                        Categories = new ObservableCollection<string>(expenseCategories.Select(x => x.Name));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+
+
+        private DelegateCommand _addSourceCommand;
+        public DelegateCommand AddSourceCommand =>
+             _addSourceCommand ??= new DelegateCommand(AddSourceCommand_Execute);
+
+        private void AddSourceCommand_Execute()
+        {
+            var addWindow = new AddExpenseSourceWindow();
+            if (addWindow.ShowDialog() == true)
+            {
+                try
+                {
+                    using (var dbContext = new AppDbContext())
+                    {
+                        var expenseSource = dbContext.ExpenseSources;
+                        var _source = new ObservableCollection<ExpenseSource>(expenseSource);
+                        Source = new ObservableCollection<string>(expenseSource.Select(x => x.Name));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
         }
     }
 }
