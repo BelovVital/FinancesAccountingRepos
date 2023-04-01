@@ -21,7 +21,7 @@ namespace FinancesAccountingApp.ViewModels
         public MainWindowViewModel()
         {
             var dbContext = new AppDbContext();
-  
+
             var wallets = dbContext.Wallets;
             Wallets = new ObservableCollection<Wallet>(wallets);
         }
@@ -44,17 +44,6 @@ namespace FinancesAccountingApp.ViewModels
             }
         }
 
-        private string _selectedWallet;
-        public string SelectedWallet
-        {
-            get => _selectedWallet;
-            set
-            {
-                _selectedWallet = value;
-                RaisePropertyChanged();
-            }
-        }
-
         private Wallet _wallet;
 
         public Wallet Wallet
@@ -66,8 +55,6 @@ namespace FinancesAccountingApp.ViewModels
                 RaisePropertyChanged();
             }
         }
-
-        public Wallet CurrentWallet {get; set;}
 
         private Expense _selectedExpense;
         public Expense SelectedExpense
@@ -96,34 +83,34 @@ namespace FinancesAccountingApp.ViewModels
         {
             get => _wallets;
             set
-            { 
+            {
                 _wallets = value;
                 RaisePropertyChanged();
-            } 
+            }
         }
-        
+
 
 
         private ObservableCollection<Expense> _expenses;
-        public ObservableCollection<Expense> Expenses 
+        public ObservableCollection<Expense> Expenses
         {
             get => _expenses;
             set
-            { 
+            {
                 _expenses = value;
                 RaisePropertyChanged();
-            } 
+            }
         }
 
         private ObservableCollection<Income> _incomes;
-        public ObservableCollection<Income> Incomes 
+        public ObservableCollection<Income> Incomes
         {
             get => _incomes;
             set
-            { 
-                _incomes = value;   
+            {
+                _incomes = value;
                 RaisePropertyChanged();
-            } 
+            }
         }
 
 
@@ -386,14 +373,14 @@ namespace FinancesAccountingApp.ViewModels
                 StartDate = Expenses.Min(x => x.Date);
                 EndDate = Expenses.Max(x => x.Date);
             }
-            else 
+            else
             {
                 StartDate = DateTime.Now;
                 EndDate = DateTime.Now;
             }
         }
 
-        
+
 
     }
 }
