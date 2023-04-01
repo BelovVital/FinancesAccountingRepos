@@ -41,6 +41,9 @@ namespace FinancesAccountingApp.ViewModels
                     Expenses.Clear();
                     Incomes.Clear();
                 }
+                AddExpenseCommand.RaiseCanExecuteChanged();
+                AddIncomeCommand.RaiseCanExecuteChanged();
+                DeleteWalletCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -146,7 +149,12 @@ namespace FinancesAccountingApp.ViewModels
 
         private DelegateCommand _addExpenseCommand;
         public DelegateCommand AddExpenseCommand =>
-                    _addExpenseCommand ??= new DelegateCommand(AddExpenseCommand_Execute);
+                    _addExpenseCommand ??= new DelegateCommand(AddExpenseCommand_Execute, AddExpenseCommand_CanExecute);
+
+        private bool AddExpenseCommand_CanExecute()
+        {
+            return SelectedWallet != null;
+        }
 
         public void AddExpenseCommand_Execute()
         {
@@ -206,7 +214,12 @@ namespace FinancesAccountingApp.ViewModels
 
         private DelegateCommand _addIncomeCommand;
         public DelegateCommand AddIncomeCommand =>
-                    _addIncomeCommand ??= new DelegateCommand(AddIncomeCommand_Execute);
+                    _addIncomeCommand ??= new DelegateCommand(AddIncomeCommand_Execute, AddIncomeCommand_CanExecute);
+
+        private bool AddIncomeCommand_CanExecute()
+        {
+            return SelectedWallet != null;
+        }
 
         public void AddIncomeCommand_Execute()
         {
