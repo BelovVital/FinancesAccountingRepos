@@ -1,7 +1,6 @@
-using FinancesAccounting.ViewModels;
-using FinancesAccountingApp.Models.DataBase.Entities;
+﻿using FinancesAccountingApp.Models.DataBase.Entities;
+using FinancesAccountingApp.ViewModels;
 using System;
-﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,19 +17,14 @@ using System.Windows.Shapes;
 namespace FinancesAccountingApp.Views
 {
     /// <summary>
-    /// Логика взаимодействия для AddExpenseWindow.xaml
+    /// Логика взаимодействия для AddWalletWindow.xaml
     /// </summary>
-    public partial class AddExpenseWindow : Window
+    public partial class AddWalletWindow : Window
     {
-        public AddExpenseWindow(Expense expense, Wallet wallet)
+        public AddWalletWindow(Wallet wallet)
         {
             InitializeComponent();
-            DataContext = new AddExpenseViewModel(this, expense, wallet);
-        }
-
-        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
+            DataContext = new AddWalletViewModel(this, wallet);
         }
     }
 }

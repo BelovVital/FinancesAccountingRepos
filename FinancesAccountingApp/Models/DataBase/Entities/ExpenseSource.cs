@@ -10,4 +10,5 @@ namespace FinancesAccountingApp.Models.DataBase.Entities
     {
         public string Name { get; set; }
     }
+
 }

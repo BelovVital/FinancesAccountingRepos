@@ -1,4 +1,5 @@
 ﻿using FinancesAccountingApp.Models.DataBase.Entities;
+using FinancesAccountingApp.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,9 +21,10 @@ namespace FinancesAccountingApp.Views
     /// </summary>
     public partial class AddIncomeWindow : Window
     {
-        public AddIncomeWindow(Income income)
+        public AddIncomeWindow(Income income, Wallet wallet)
         {
             InitializeComponent();
+            DataContext = new AddIncomeViewModel(this, income, wallet);
         }
     }
 }

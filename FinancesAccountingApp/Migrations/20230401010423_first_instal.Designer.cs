@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FinancesAccountingApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230321181421_FinanceAccountingInitialisation")]
-    partial class FinanceAccountingInitialisation
+    [Migration("20230401010423_first_instal")]
+    partial class first_instal
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,9 +38,8 @@ namespace FinancesAccountingApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Scale")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<double>("Scale")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 

@@ -25,8 +25,7 @@ namespace FinancesAccountingApp.Views
         public ChartWindow(
             ObservableCollection<Income> incomes,
             ObservableCollection<Expense> expensies,
-            Wallet wallet
-            )
+            Wallet wallet)
         {
             InitializeComponent();
             DataContext = new ChartWindowViewModel(this, incomes, expensies, wallet);

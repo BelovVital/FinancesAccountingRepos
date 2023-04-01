@@ -2,6 +2,7 @@
 using FinancesAccountingApp.Models.DataBase.Entities;
 using FinancesAccountingApp.Views;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
@@ -11,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 
 namespace FinancesAccountingApp.ViewModels
 {
@@ -19,24 +21,27 @@ namespace FinancesAccountingApp.ViewModels
         public MainWindowViewModel()
         {
             var dbContext = new AppDbContext();
+  
+            var wallets = dbContext.Wallets;
+            Wallets = new ObservableCollection<Wallet>(wallets);
+        }
 
-            var wallet = dbContext.Wallets;
-            Wallets = new ObservableCollection<Wallet>(wallet);
-
-            CurrentWallet = Wallets.FirstOrDefault();
-            WalletNames = new ObservableCollection<string>(Wallets.Select(x => x.Name));
-            SelectedWallet = WalletNames.FirstOrDefault();
-
-            var expenses = dbContext.Expenses.Where(x => x.WalletId == CurrentWallet.Id);
-            Expenses = new ObservableCollection<Expense>(expenses);
-            RaisePropertyChanged(nameof(Expenses));
-
-            var incomes = dbContext.Incomes.Where(x => x.WalletId == CurrentWallet.Id);
-            Incomes = new ObservableCollection<Income>(incomes);
-            RaisePropertyChanged(nameof(Incomes));
-
-            StartDate = Expenses.Min(x => x.Date);
-            EndDate = Expenses.Max(x => x.Date);
+        private Wallet _selectedWallet;
+        public Wallet SelectedWallet
+        {
+            get => _selectedWallet;
+            set
+            {
+                _selectedWallet = value;
+                RaisePropertyChanged();
+                if (SelectedWallet != null)
+                    ResetIncomesExpensesInWallet();
+                else
+                {
+                    Expenses.Clear();
+                    Incomes.Clear();
+                }
+            }
         }
 
         private string _selectedWallet;
@@ -86,26 +91,47 @@ namespace FinancesAccountingApp.ViewModels
             }
         }
 
-        public ObservableCollection<Wallet> Wallets { get; set; }
-
-        private ObservableCollection<string> _walletNames;
-        public ObservableCollection<string> WalletNames 
+        private ObservableCollection<Wallet> _wallets;
+        public ObservableCollection<Wallet> Wallets
         {
-            get => _walletNames;
+            get => _wallets;
             set
-            {
-                _walletNames = value;
+            { 
+                _wallets = value;
                 RaisePropertyChanged();
             } 
         }
-        public ObservableCollection<Expense> Expenses { get; set; }
-        public ObservableCollection<Income> Incomes { get; set; }
+        
+
+
+        private ObservableCollection<Expense> _expenses;
+        public ObservableCollection<Expense> Expenses 
+        {
+            get => _expenses;
+            set
+            { 
+                _expenses = value;
+                RaisePropertyChanged();
+            } 
+        }
+
+        private ObservableCollection<Income> _incomes;
+        public ObservableCollection<Income> Incomes 
+        {
+            get => _incomes;
+            set
+            { 
+                _incomes = value;   
+                RaisePropertyChanged();
+            } 
+        }
+
 
         public bool HasCanEditOrRemoveExpense => SelectedExpense != null;
         public bool HasCanEditOrRemoveIncome => SelectedIncome != null;
 
-        private DateTime? _startDate;
 
+        private DateTime? _startDate;
         public DateTime StartDate
         {
             get => _startDate ?? default;
@@ -119,7 +145,6 @@ namespace FinancesAccountingApp.ViewModels
         }
 
         private DateTime? _endDate;
-
         public DateTime EndDate
         {
             get => _endDate ?? default;
@@ -134,19 +159,22 @@ namespace FinancesAccountingApp.ViewModels
 
         private DelegateCommand _addExpenseCommand;
         public DelegateCommand AddExpenseCommand =>
-                    _addExpenseCommand ??= new DelegateCommand(AddCommand_Execute);
+                    _addExpenseCommand ??= new DelegateCommand(AddExpenseCommand_Execute);
 
-        public void AddCommand_Execute()
+        public void AddExpenseCommand_Execute()
         {
             var expense = new Expense();
-            var addWindow = new AddExpenseWindow(expense);
+            var addWindow = new AddExpenseWindow(expense, SelectedWallet);
             if (addWindow.ShowDialog() == true)
             {
                 try
                 {
                     using (var dbContext = new AppDbContext())
                     {
-                        dbContext.Add(expense);
+                        SelectedWallet.Summa -= expense.Summa;
+                        dbContext.Wallets.Update(SelectedWallet);
+
+                        dbContext.Expenses.Add(expense);
                         dbContext.SaveChanges();
                     }
                 }
@@ -155,6 +183,7 @@ namespace FinancesAccountingApp.ViewModels
                     MessageBox.Show(ex.Message);
                 }
                 Expenses.Add(expense);
+                SelectedExpense = null;
             }
         }
 
@@ -169,13 +198,13 @@ namespace FinancesAccountingApp.ViewModels
             {
                 using (var dbContext = new AppDbContext())
                 {
-                    DbSet<Expense> dbSet = dbContext.Set<Expense>();
-                    dbSet.Remove(SelectedExpense);
+                    SelectedWallet.Summa += SelectedExpense.Summa;
+                    dbContext.Wallets.Update(SelectedWallet);
+
+                    dbContext.Expenses.Remove(SelectedExpense);
                     dbContext.SaveChanges();
                 }
-                ObservableCollection<Expense> itemsCollection = Expenses;
-                itemsCollection.Remove(SelectedExpense);
-                itemsCollection = null;
+                Expenses.Remove(SelectedExpense);
                 SelectedExpense = null;
             }
             catch (Exception ex)
@@ -195,14 +224,17 @@ namespace FinancesAccountingApp.ViewModels
         public void AddIncomeCommand_Execute()
         {
             var income = new Income();
-            var addWindow = new AddIncomeWindow(income);
+            var addWindow = new AddIncomeWindow(income, SelectedWallet);
             if (addWindow.ShowDialog() == true)
             {
                 try
                 {
                     using (var dbContext = new AppDbContext())
                     {
-                        dbContext.Add(income);
+                        SelectedWallet.Summa += income.Summa;
+                        dbContext.Wallets.Update(SelectedWallet);
+
+                        dbContext.Incomes.Add(income);
                         dbContext.SaveChanges();
                     }
                 }
@@ -210,8 +242,8 @@ namespace FinancesAccountingApp.ViewModels
                 {
                     MessageBox.Show(ex.Message);
                 }
-                var collection = Incomes;
-                collection.Add(income);
+                Incomes.Add(income);
+                SelectedIncome = null;
             }
         }
 
@@ -226,13 +258,13 @@ namespace FinancesAccountingApp.ViewModels
             {
                 using (var dbContext = new AppDbContext())
                 {
-                    DbSet<Income> dbSet = dbContext.Set<Income>();
-                    dbSet.Remove(SelectedIncome);
+                    SelectedWallet.Summa -= SelectedIncome.Summa;
+                    dbContext.Wallets.Update(SelectedWallet);
+
+                    dbContext.Incomes.Remove(SelectedIncome);
                     dbContext.SaveChanges();
                 }
-                ObservableCollection<Income> itemsCollection = Incomes;
-                itemsCollection.Remove(SelectedIncome);
-                itemsCollection = null;
+                Incomes.Remove(SelectedIncome);
                 SelectedExpense = null;
             }
             catch (Exception ex)
@@ -240,11 +272,66 @@ namespace FinancesAccountingApp.ViewModels
                 MessageBox.Show(ex.Message);
             }
         }
+
         public bool DeleteIncomeCommand_CanExecute()
         {
             return SelectedIncome != null;
         }
 
+
+        private DelegateCommand _addWalletCommand;
+        public DelegateCommand AddWalletCommand =>
+                    _addWalletCommand ??= new DelegateCommand(AddWalletCommand_Execute);
+
+        public void AddWalletCommand_Execute()
+        {
+            var wallet = new Wallet();
+            var addWindow = new AddWalletWindow(wallet);
+            if (addWindow.ShowDialog() == true)
+            {
+                try
+                {
+                    using (var dbContext = new AppDbContext())
+                    {
+                        dbContext.Wallets.Add(wallet);
+                        dbContext.SaveChanges();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+                Wallets.Add(wallet);
+                SelectedWallet = wallet;
+            }
+        }
+
+        private DelegateCommand _deleteWalletCommand;
+
+        public DelegateCommand DeleteWalletCommand =>
+                            _deleteWalletCommand ??= new DelegateCommand(DeleteWalletCommand_Execute, DeleteWalletCommand_CanExecute);
+
+        protected virtual void DeleteWalletCommand_Execute()
+        {
+            try
+            {
+                using (var dbContext = new AppDbContext())
+                {
+                    dbContext.Wallets.Remove(SelectedWallet);
+                    dbContext.SaveChanges();
+                }
+                Wallets.Remove(SelectedWallet);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            SelectedWallet ??= Wallets.FirstOrDefault();
+        }
+        public bool DeleteWalletCommand_CanExecute()
+        {
+            return SelectedWallet != null;
+        }
 
         private DelegateCommand _accountCommand;
         public DelegateCommand AccountCommand =>
@@ -252,24 +339,61 @@ namespace FinancesAccountingApp.ViewModels
 
         public void AccountCommand_Execute()
         {
-            var addWindow = new ChartWindow(Incomes, Expenses, CurrentWallet);
+            var addWindow = new ChartWindow(Incomes, Expenses, SelectedWallet);
             addWindow.ShowDialog();
+        }
 
+
+        private DelegateCommand _exitCommand;
+
+        public DelegateCommand ExitCommand =>
+                            _exitCommand ??= new DelegateCommand(ExitCommand_Execute);
+
+        private void ExitCommand_Execute()
+        {
+            Environment.Exit(0);
         }
 
         public void ResetIncomesExpenses()
         {
             var dbContext = new AppDbContext();
 
-            var expenses = dbContext.Expenses.Where(x => x.WalletId == CurrentWallet.Id 
+            var expenses = dbContext.Expenses.Where(x => x.WalletId == SelectedWallet.Id
                 && x.Date >= StartDate && x.Date <= EndDate);
             Expenses = new ObservableCollection<Expense>(expenses);
-            RaisePropertyChanged(nameof(Expenses));
+            //RaisePropertyChanged(nameof(Expenses));
 
-            var incomes = dbContext.Incomes.Where(x => x.WalletId == CurrentWallet.Id
+            var incomes = dbContext.Incomes.Where(x => x.WalletId == SelectedWallet.Id
                 && x.Date >= StartDate && x.Date <= EndDate);
             Incomes = new ObservableCollection<Income>(incomes);
-            RaisePropertyChanged(nameof(Incomes));
+            //RaisePropertyChanged(nameof(Incomes));
         }
+
+        public void ResetIncomesExpensesInWallet()
+        {
+            var dbContext = new AppDbContext();
+
+            var expenses = dbContext.Expenses.Where(x => x.WalletId == SelectedWallet.Id);
+            Expenses = new ObservableCollection<Expense>(expenses);
+            //RaisePropertyChanged(nameof(Expenses));
+
+            var incomes = dbContext.Incomes.Where(x => x.WalletId == SelectedWallet.Id);
+            Incomes = new ObservableCollection<Income>(incomes);
+            //RaisePropertyChanged(nameof(Incomes));
+
+            if (Expenses.Any())
+            {
+                StartDate = Expenses.Min(x => x.Date);
+                EndDate = Expenses.Max(x => x.Date);
+            }
+            else 
+            {
+                StartDate = DateTime.Now;
+                EndDate = DateTime.Now;
+            }
+        }
+
+        
+
     }
 }

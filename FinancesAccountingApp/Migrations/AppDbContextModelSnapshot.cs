@@ -35,9 +35,8 @@ namespace FinancesAccountingApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Scale")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<double>("Scale")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 

@@ -12,5 +12,10 @@ namespace FinancesAccountingApp.Models.DataBase.Entities
         public double Summa { get; set; }
         public string Currency { get; set; }
         public DateTime Date { get; set; }
+
+        public override string ToString()
+        {
+            return Name; 
+        }
     }
 }
