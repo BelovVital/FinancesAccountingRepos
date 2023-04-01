@@ -1,5 +1,6 @@
 ﻿using FinancesAccountingApp.Models.DataBase.Entities;
 using FinancesAccountingApp.Views;
+using Microsoft.IdentityModel.Tokens;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
@@ -27,6 +28,19 @@ namespace FinancesAccountingApp.ViewModels
             Expensies.OrderBy(x => x.Date);
             Incomes.OrderBy(x => x.Date);
 
+            double expenseSumm = 0;
+            foreach (var expense in Expensies)
+            {
+                expenseSumm += expense.Summa;
+            }
+            ExpenseSumm = expenseSumm.ToString();
+
+            double incomeSumm = 0;
+            foreach (var income in Incomes)
+            {
+                incomeSumm += income.Summa;
+            }
+            IncomeSumm = incomeSumm.ToString();
         }
 
         ChartWindow _chartWindow;
@@ -80,12 +94,7 @@ namespace FinancesAccountingApp.ViewModels
             get => _expenseSumm;
             set 
             {
-                double expenseSumm = 0;
-                foreach (var expense in Expensies)
-                {
-                    _expenseSumm += expense.Summa;
-                }
-                _expenseSumm = expenseSumm.ToString();
+                _expenseSumm = value;
                 RaisePropertyChanged();
             }
         }
@@ -96,12 +105,7 @@ namespace FinancesAccountingApp.ViewModels
             get => _incomeSumm;
             set
             {
-                double incomeSumm = 0;
-                foreach (var income in Incomes)
-                {
-                    _incomeSumm += income.Summa;
-                }
-                _incomeSumm = incomeSumm.ToString();
+                _incomeSumm = value;
                 RaisePropertyChanged();
             }
         }
@@ -113,7 +117,12 @@ namespace FinancesAccountingApp.ViewModels
 
         private DelegateCommand _showExpenseCommand;
         public DelegateCommand ShowExpenseCommand =>
-            _showExpenseCommand ??= new DelegateCommand(ShowExpenseCommand_Execute);
+            _showExpenseCommand ??= new DelegateCommand(ShowExpenseCommand_Execute, ShowExpenseCommand_CanExecute);
+
+        private bool ShowExpenseCommand_CanExecute()
+        {
+            return !Expensies.IsNullOrEmpty();
+        }
 
         private void ShowExpenseCommand_Execute()
         {
@@ -138,7 +147,12 @@ namespace FinancesAccountingApp.ViewModels
 
         private DelegateCommand _showIncomeCommand;
         public DelegateCommand ShowIncomeCommand =>
-            _showIncomeCommand ??= new DelegateCommand(ShowIncomeCommand_Execute);
+            _showIncomeCommand ??= new DelegateCommand(ShowIncomeCommand_Execute, ShowIncomeCommand_CanExecute);
+
+        private bool ShowIncomeCommand_CanExecute()
+        {
+            return !Incomes.IsNullOrEmpty();
+        }
 
         private void ShowIncomeCommand_Execute()
         {

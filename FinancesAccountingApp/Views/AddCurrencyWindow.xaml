@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:FinancesAccountingApp.Views"
         xmlns:viewModel="clr-namespace:FinancesAccounting.ViewModels"
         mc:Ignorable="d"
-        Title="AddCurrencyWindow" Height="450" Width="450">
+        Title="Редактирование валют" Height="450" Width="450">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="5*"/>

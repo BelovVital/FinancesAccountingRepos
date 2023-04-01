@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FinancesAccountingApp.Views"
         mc:Ignorable="d"
-        Title="ChartWindow" Height="450" Width="800">
+        Title="Отчет" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="4*"/>
@@ -39,7 +39,7 @@
                        Grid.Row="1" Grid.Column="2" FontSize="14" Margin="10"/>
 
             <RadioButton Content="График расходов" Grid.Row="0" Grid.Column="3" Margin="10" FontSize="14"
-                         Command="{Binding ShowExpenseCommand, UpdateSourceTrigger=PropertyChanged}" IsChecked="True"/>
+                         Command="{Binding ShowExpenseCommand, UpdateSourceTrigger=PropertyChanged}"/>
             <RadioButton Content="График доодов" Grid.Row="1" Grid.Column="3" Margin="10" FontSize="14"
                          Command="{Binding ShowIncomeCommand, UpdateSourceTrigger=PropertyChanged}"/>
 

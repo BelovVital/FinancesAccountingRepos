@@ -7,7 +7,7 @@
         xmlns:viewmodels="clr-namespace:FinancesAccountingApp.ViewModels"
         mc:Ignorable="d"
         ResizeMode="NoResize"
-        Title="AddIncomeWindow" Height="525" Width="450">
+        Title="Добавление дохода" Height="525" Width="450">
     <Window.Resources>
         <Style TargetType="TextBlock">
             <Setter Property="ItemsControl.FontFamily" Value="Calibri"/>
@@ -51,7 +51,7 @@
 
         <TextBlock Grid.Row="2" Margin="25"> Категория </TextBlock>
         <ComboBox Grid.Row="2" Grid.Column="1" Margin="25"
-                  SelectedItem="{Binding SelectedCategories, UpdateSourceTrigger=PropertyChanged}"
+                  SelectedItem="{Binding SelectedCategory, UpdateSourceTrigger=PropertyChanged}"
                   ItemsSource="{Binding Categories}"/>
         <Button Grid.Row="2" Grid.Column="2" Height="30" Width="30" Margin="5" Content="+"
                 Command="{Binding AddCategoryCommand}"/>
@@ -59,7 +59,7 @@
         <TextBlock Grid.Row="3" Margin="25"> Источник </TextBlock>
         <ComboBox Grid.Row="3" Grid.Column="1" Margin="25"
                   SelectedItem="{Binding SelectedSource, UpdateSourceTrigger=PropertyChanged}"
-                  ItemsSource="{Binding Source}"/>
+                  ItemsSource="{Binding Sources}"/>
         <Button Grid.Row="3" Grid.Column="2" Height="30" Width="30" Margin="5" Content="+"
                 Command="{Binding AddSourceCommand}"/>
 

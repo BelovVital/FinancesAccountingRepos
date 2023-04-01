@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:FinancesAccountingApp.Views"
         xmlns:viewmodels1="clr-namespace:FinancesAccounting.ViewModels"
         mc:Ignorable="d"
-         Title="AddIncomeSourceWindow" Height="450" Width="450">
+         Title="Источник расхода" Height="450" Width="450">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="5*"/>

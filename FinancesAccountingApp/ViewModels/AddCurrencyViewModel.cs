@@ -39,7 +39,17 @@ namespace FinancesAccountingApp.ViewModels
             }
         }
 
-        public ObservableCollection<Currency> Currencies { get; set; }
+        private ObservableCollection<Currency> _currencies;
+
+        public ObservableCollection<Currency> Currencies 
+        {
+            get => _currencies;
+            set
+            {
+                _currencies = value;
+                RaisePropertyChanged();
+            }
+        }
 
         private Currency _selectedCurrency;
 
@@ -50,6 +60,7 @@ namespace FinancesAccountingApp.ViewModels
             {
                 _selectedCurrency = value;
                 RaisePropertyChanged();
+                DeleteCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -62,6 +73,7 @@ namespace FinancesAccountingApp.ViewModels
             {
                 _newName = value;
                 RaisePropertyChanged();
+                SaveCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -73,6 +85,7 @@ namespace FinancesAccountingApp.ViewModels
             {
                 _newScale = value;
                 RaisePropertyChanged();
+                SaveCommand.RaiseCanExecuteChanged();   
             }
         }
 
@@ -86,7 +99,7 @@ namespace FinancesAccountingApp.ViewModels
             Currency = new Currency();
             Currency.Id = Guid.Empty.Equals(Currency.Id) ? Guid.NewGuid() : Currency.Id;
             Currency.Name = NewName;
-            Currency.Scale = NewScale;
+            Currency.Scale = double.Parse(NewScale);
 
             var dbContext = new AppDbContext();
             dbContext.Currencies.Add(Currency);
@@ -98,28 +111,26 @@ namespace FinancesAccountingApp.ViewModels
 
         public bool SaveCommand_CanExecute()
         {
-            return !string.IsNullOrWhiteSpace(NewName);
+            return !string.IsNullOrWhiteSpace(NewName)
+                && !string.IsNullOrWhiteSpace(NewScale);    
         }
 
 
-        private DelegateCommand _deleteExpenseCommand;
+        private DelegateCommand _deleteCommand;
 
-        public DelegateCommand DeleteExpenseCommand =>
-                            _deleteExpenseCommand ??= new DelegateCommand(DeleteExpenseCommand_Execute, DeleteExpenseCommand_CanExecute);
+        public DelegateCommand DeleteCommand =>
+                            _deleteCommand ??= new DelegateCommand(DeleteCommand_Execute, DeleteCommand_CanExecute);
 
-        public void DeleteExpenseCommand_Execute()
+        public void DeleteCommand_Execute()
         {
             try
             {
                 using (var dbContext = new AppDbContext())
                 {
-                    DbSet<Currency> dbSet = dbContext.Set<Currency>();
-                    dbSet.Remove(SelectedCurrency);
+                    dbContext.Currencies.Remove(SelectedCurrency);
                     dbContext.SaveChanges();
                 }
-                ObservableCollection<Currency> itemsCollection = Currencies;
-                itemsCollection.Remove(SelectedCurrency);
-                itemsCollection = null;
+                Currencies.Remove(SelectedCurrency);
                 SelectedCurrency = null;
             }
             catch (Exception ex)
@@ -127,7 +138,7 @@ namespace FinancesAccountingApp.ViewModels
                 MessageBox.Show(ex.Message);
             }
         }
-        public bool DeleteExpenseCommand_CanExecute()
+        public bool DeleteCommand_CanExecute()
         {
             return SelectedCurrency != null;
         }
@@ -138,7 +149,7 @@ namespace FinancesAccountingApp.ViewModels
 
         private void CancelCommand_Execute()
         {
-            _addWindow.DialogResult = false;
+            _addWindow.DialogResult = true;
             _addWindow.Close();
         }
 

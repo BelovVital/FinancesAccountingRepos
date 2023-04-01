@@ -24,7 +24,7 @@ namespace FinancesAccountingApp.ViewModels
 
             var currency = dbcontext.Currencies;
             Currencies = new ObservableCollection<Currency>(currency);
-            SelectedCurrency = Currencies.FirstOrDefault();
+            SelectedCurrency ??= Currencies.FirstOrDefault();
         }
 
         AddWalletWindow _addWalletWindow;
@@ -59,6 +59,7 @@ namespace FinancesAccountingApp.ViewModels
             {
                 _summa = value;
                 RaisePropertyChanged();
+                SaveCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -70,6 +71,7 @@ namespace FinancesAccountingApp.ViewModels
             {
                 _selectedCurrency = value;
                 RaisePropertyChanged();
+                SaveCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -83,7 +85,18 @@ namespace FinancesAccountingApp.ViewModels
                 RaisePropertyChanged();
             }
         }
-        public ObservableCollection<Currency> Currencies { get; set; }
+        private ObservableCollection<Currency> _currencies;
+
+        public ObservableCollection<Currency> Currencies
+        {
+            get => _currencies;
+            set
+            {
+                _currencies = value;
+                RaisePropertyChanged();
+                SaveCommand.RaiseCanExecuteChanged();
+            }
+        }
 
 
         private DelegateCommand _saveCommand;
@@ -103,9 +116,9 @@ namespace FinancesAccountingApp.ViewModels
 
         public bool SaveCommand_CanExecute()
         {
-            return true;
-            //return !string.IsNullOrWhiteSpace(Summa) 
-            //    && !string.IsNullOrWhiteSpace(Name);
+            return !string.IsNullOrWhiteSpace(Summa) 
+                && !string.IsNullOrWhiteSpace(Name)
+                && SelectedCurrency != null;
         }
 
         private DelegateCommand _cancelCommand;
@@ -133,6 +146,7 @@ namespace FinancesAccountingApp.ViewModels
                     {
                         var currency = dbContext.Currencies;
                         Currencies = new ObservableCollection<Currency>(currency);
+                        SelectedCurrency = Currencies.FirstOrDefault();
                     }
                 }
                 catch (Exception ex)

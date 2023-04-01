@@ -39,7 +39,16 @@ namespace FinancesAccountingApp.ViewModels
             }
         }
 
-        public ObservableCollection<ExpenseCategory> ExpenseCategories { get; set; }
+        private ObservableCollection<ExpenseCategory> _expenseCategories { get; set; }
+        public ObservableCollection<ExpenseCategory> ExpenseCategories 
+        {
+            get => _expenseCategories;
+            set
+            { 
+                _expenseCategories = value;
+                RaisePropertyChanged();
+            } 
+        }
 
         private ExpenseCategory _selectedExpenseCategory;
 
@@ -50,6 +59,7 @@ namespace FinancesAccountingApp.ViewModels
             {
                 _selectedExpenseCategory = value;
                 RaisePropertyChanged();
+                DeleteCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -62,6 +72,7 @@ namespace FinancesAccountingApp.ViewModels
             {
                 _newName = value;
                 RaisePropertyChanged();
+                SaveCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -89,24 +100,21 @@ namespace FinancesAccountingApp.ViewModels
         }
 
 
-        private DelegateCommand _deleteExpenseCommand;
+        private DelegateCommand _deleteCommand;
 
-        public DelegateCommand DeleteExpenseCommand =>
-                            _deleteExpenseCommand ??= new DelegateCommand(DeleteExpenseCommand_Execute, DeleteExpenseCommand_CanExecute);
+        public DelegateCommand DeleteCommand =>
+                            _deleteCommand ??= new DelegateCommand(DeleteCommand_Execute, DeleteCommand_CanExecute);
 
-        public void DeleteExpenseCommand_Execute()
+        public void DeleteCommand_Execute()
         {
             try
             {
                 using (var dbContext = new AppDbContext())
                 {
-                    DbSet<ExpenseCategory> dbSet = dbContext.Set<ExpenseCategory>();
-                    dbSet.Remove(SelectedExpenseCategory);
+                    dbContext.ExpenseCategories.Remove(SelectedExpenseCategory);
                     dbContext.SaveChanges();
                 }
-                ObservableCollection<ExpenseCategory> itemsCollection = ExpenseCategories;
-                itemsCollection.Remove(SelectedExpenseCategory);
-                itemsCollection = null;
+                ExpenseCategories.Remove(SelectedExpenseCategory);
                 SelectedExpenseCategory = null;
             }
             catch (Exception ex)
@@ -114,7 +122,7 @@ namespace FinancesAccountingApp.ViewModels
                 MessageBox.Show(ex.Message);
             }
         }
-        public bool DeleteExpenseCommand_CanExecute()
+        public bool DeleteCommand_CanExecute()
         {
             return SelectedExpenseCategory != null;
         }
@@ -125,7 +133,7 @@ namespace FinancesAccountingApp.ViewModels
 
         private void CancelCommand_Execute()
         {
-            _addWindow.DialogResult = false;
+            _addWindow.DialogResult = true;
             _addWindow.Close();
         }
     }

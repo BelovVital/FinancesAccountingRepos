@@ -22,10 +22,15 @@ namespace FinancesAccountingApp.Views
     /// </summary>
     public partial class AddExpenseWindow : Window
     {
-        public AddExpenseWindow(Expense expense, Guid walletId)
+        public AddExpenseWindow(Expense expense, Wallet wallet)
         {
             InitializeComponent();
-            DataContext = new AddExpenseViewModel(this, expense, walletId);
+            DataContext = new AddExpenseViewModel(this, expense, wallet);
+        }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
         }
     }
 }

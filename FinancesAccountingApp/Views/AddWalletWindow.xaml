@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:FinancesAccountingApp.Views"
         xmlns:viewModel="clr-namespace:FinancesAccountingApp.ViewModels" 
         mc:Ignorable="d"
-        Title="AddWalletWindow" Height="450" Width="400">
+        Title="Добавление кошелька" Height="450" Width="400">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>

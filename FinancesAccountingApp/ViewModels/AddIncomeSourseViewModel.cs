@@ -39,7 +39,16 @@ namespace FinancesAccountingApp.ViewModels
             }
         }
 
-        public ObservableCollection<IncomeSource> IncomeSources { get; set; }
+        private ObservableCollection<IncomeSource> _incomeSources;
+        public ObservableCollection<IncomeSource> IncomeSources 
+        {
+            get => _incomeSources;
+            set
+            { 
+                _incomeSources = value; 
+                RaisePropertyChanged();
+            } 
+        }
 
         private IncomeSource _selectedIncomeSource;
 
@@ -50,6 +59,7 @@ namespace FinancesAccountingApp.ViewModels
             {
                 _selectedIncomeSource = value;
                 RaisePropertyChanged();
+                DeleteCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -62,6 +72,7 @@ namespace FinancesAccountingApp.ViewModels
             {
                 _newName = value;
                 RaisePropertyChanged();
+                SaveCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -89,24 +100,21 @@ namespace FinancesAccountingApp.ViewModels
         }
 
 
-        private DelegateCommand _deleteExpenseCommand;
+        private DelegateCommand _deleteCommand;
 
-        public DelegateCommand DeleteExpenseCommand =>
-                            _deleteExpenseCommand ??= new DelegateCommand(DeleteExpenseCommand_Execute, DeleteExpenseCommand_CanExecute);
+        public DelegateCommand DeleteCommand =>
+                            _deleteCommand ??= new DelegateCommand(DeleteCommand_Execute, DeleteCommand_CanExecute);
 
-        public void DeleteExpenseCommand_Execute()
+        public void DeleteCommand_Execute()
         {
             try
             {
                 using (var dbContext = new AppDbContext())
                 {
-                    DbSet<IncomeSource> dbSet = dbContext.Set<IncomeSource>();
-                    dbSet.Remove(SelectedIncomeSource);
+                    dbContext.IncomeSources.Remove(SelectedIncomeSource);
                     dbContext.SaveChanges();
                 }
-                ObservableCollection<IncomeSource> itemsCollection = IncomeSources;
-                itemsCollection.Remove(SelectedIncomeSource);
-                itemsCollection = null;
+                IncomeSources.Remove(SelectedIncomeSource);
                 SelectedIncomeSource = null;
             }
             catch (Exception ex)
@@ -114,7 +122,7 @@ namespace FinancesAccountingApp.ViewModels
                 MessageBox.Show(ex.Message);
             }
         }
-        public bool DeleteExpenseCommand_CanExecute()
+        public bool DeleteCommand_CanExecute()
         {
             return SelectedIncomeSource != null;
         }
@@ -125,7 +133,7 @@ namespace FinancesAccountingApp.ViewModels
 
         private void CancelCommand_Execute()
         {
-            _addWindow.DialogResult = false;
+            _addWindow.DialogResult = true;
             _addWindow.Close();
         }
     }

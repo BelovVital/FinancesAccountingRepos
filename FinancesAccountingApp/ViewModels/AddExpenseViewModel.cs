@@ -1,4 +1,5 @@
 ﻿using FinancesAccounting.Models.DataBase;
+using FinancesAccountingApp.Helpers;
 using FinancesAccountingApp.Models.DataBase.Entities;
 using FinancesAccountingApp.Views;
 using Prism.Commands;
@@ -16,30 +17,35 @@ namespace FinancesAccounting.ViewModels
     public class AddExpenseViewModel : BindableBase
     {
         AddExpenseWindow _addExpenseWindow; 
-        public AddExpenseViewModel(AddExpenseWindow addExpenseWindow, Expense expense, Guid walletId) 
+        public AddExpenseViewModel(AddExpenseWindow addExpenseWindow, Expense expense, Wallet wallet) 
         {
             _addExpenseWindow = addExpenseWindow;
             Expense = expense;
-            _walletId= walletId;
+            _wallet= wallet;
             
             var dbcontext = new AppDbContext();
 
             var currency = dbcontext.Currencies;
-            var _currencies = new ObservableCollection<Currency>(currency);
-            Currencies = new ObservableCollection<string>(_currencies.Select(x => x.Name));
+            _currentCurrencies = new ObservableCollection<Currency>(currency);
+            Currencies = new ObservableCollection<string>(_currentCurrencies.Select(x => x.Name));
+            SelectedCurrency ??= Currencies.FirstOrDefault();
 
             var expenseCategories = dbcontext.ExpenseCategories;
             var _categories = new ObservableCollection<ExpenseCategory>(expenseCategories);
             Categories = new ObservableCollection<string>(expenseCategories.Select(x => x.Name));
+            SelectedCategory ??= Categories.FirstOrDefault();
 
             var expenseSource = dbcontext.ExpenseSources;
-            var _source = new ObservableCollection<ExpenseSource>(expenseSource);
-            Source = new ObservableCollection<string>(expenseSource.Select(x => x.Name));
+            var _sources = new ObservableCollection<ExpenseSource>(expenseSource);
+            Sources = new ObservableCollection<string>(_sources.Select(x => x.Name));
+            SelectedSource ??= Sources.FirstOrDefault();
 
             Dates = DateTime.Now;
         }
 
-        Guid _walletId;
+        Wallet _wallet;
+
+        ObservableCollection<Currency> _currentCurrencies;
 
         private Expense _expense;
         public Expense Expense
@@ -64,7 +70,17 @@ namespace FinancesAccounting.ViewModels
             }
         }
 
-        public ObservableCollection<string> Currencies { get; set; }
+        private ObservableCollection<string> _currencies;
+        public ObservableCollection<string> Currencies 
+        {
+            get => _currencies;
+            set
+            { 
+                _currencies= value;
+                RaisePropertyChanged();
+            } 
+        }
+
         private string _currency;
         public string Currency
         {
@@ -76,50 +92,48 @@ namespace FinancesAccounting.ViewModels
             }
         }
 
-        private string _selectedcurrency;
+        private string _selectedCurrency;
         public string SelectedCurrency
         {
-            get => _selectedcurrency;
+            get => _selectedCurrency;
             set
             {
-                _selectedcurrency = value;
+                _selectedCurrency = value;
                 RaisePropertyChanged();
                 SaveCommand.RaiseCanExecuteChanged();
             }
         }
 
-        public ObservableCollection<string> Categories { get; set; }
-        private string _expenseCategory;
-        public string ExpenseCategory
+        private ObservableCollection<string> _categories;
+        public ObservableCollection<string> Categories 
         {
-            get => _expenseCategory;
+            get => _categories;
             set
-            {
-                _expenseCategory = value;
+            { 
+                _categories= value; 
                 RaisePropertyChanged();
-            }
+            } 
         }
 
-        private string _selectedExpenseCategories;
-        public string SelectedCategories
+        private string _selectedExpenseCategory;
+        public string SelectedCategory
         {
-            get => _selectedExpenseCategories;
+            get => _selectedExpenseCategory;
             set
             {
-                _selectedExpenseCategories = value;
+                _selectedExpenseCategory = value;
                 RaisePropertyChanged();
                 SaveCommand.RaiseCanExecuteChanged();
             }
         }
 
-        public ObservableCollection<string> Source { get; set; }
-        private string _expenseSource;
-        public string ExpenseSource
+        private ObservableCollection<string> _sources;
+        public ObservableCollection<string> Sources
         {
-            get=> _expenseSource;
+            get => _sources;
             set
             {
-                _expenseSource = value;
+                _sources = value;
                 RaisePropertyChanged();
             }
         }
@@ -154,20 +168,27 @@ namespace FinancesAccounting.ViewModels
 
         public void SaveCommand_Execute()
         {
-            Expense.Summa = double.Parse(Summa);
-            Expense.Currency = SelectedCurrency;
-            Expense.Category = SelectedCategories;
+            var summa = double.Parse(Summa);
+            Expense.Summa = Money.ConvertToWalletCurrency(_wallet, summa, SelectedCurrency);
+            Expense.Currency = _wallet.Currency;
+
+            Expense.Category = SelectedCategory;
             Expense.Source = SelectedSource;
+
             Expense.Date = Dates;
-            Expense.WalletId = _walletId;
+            Expense.WalletId = _wallet.Id;
             Expense.Id = Guid.Empty.Equals(Expense.Id)? Guid.NewGuid() : Expense.Id;
+
             _addExpenseWindow.DialogResult = true;
             _addExpenseWindow.Close();
         }
 
         public bool SaveCommand_CanExecute()
         {
-            return !string.IsNullOrWhiteSpace(Summa);
+            return !string.IsNullOrWhiteSpace(Summa)
+                && SelectedCurrency != null
+                && SelectedCategory != null
+                && SelectedSource != null;
         }
 
         private DelegateCommand _cancelCommand;
@@ -248,7 +269,7 @@ namespace FinancesAccounting.ViewModels
                     {
                         var expenseSource = dbContext.ExpenseSources;
                         var _source = new ObservableCollection<ExpenseSource>(expenseSource);
-                        Source = new ObservableCollection<string>(expenseSource.Select(x => x.Name));
+                        Sources = new ObservableCollection<string>(expenseSource.Select(x => x.Name));
                     }
                 }
                 catch (Exception ex)
